@@ -9,7 +9,6 @@
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-  <!-- ===== Firebase (for real-time cross-device sync) ===== -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <style>
@@ -37,17 +36,21 @@
     }
     .hdr-btn:hover { background:rgba(255,255,255,0.35); }
     .hdr-btn:disabled { opacity:0.45; cursor:not-allowed; }
-    .hdr-btn.cloud-on { background:rgba(34,197,94,0.35); border-color:rgba(34,197,94,0.6); }
-    .hdr-btn.cloud-off { background:rgba(239,68,68,0.3); border-color:rgba(239,68,68,0.5); }
+    .hdr-btn.hidden { display:none !important; }
     .tab-bar { display:flex; gap:8px; overflow-x:auto; padding:8px 0; width:100%; margin-top:8px; border-top:1px solid rgba(255,255,255,0.15); }
     .tab-btn {
       background:rgba(255,255,255,0.15); color:white; border:none; padding:8px 18px;
       border-radius:25px; cursor:pointer; white-space:nowrap; font-weight:500; font-size:0.85rem; transition:all 0.2s;
+      display:flex; align-items:center; gap:6px;
     }
     .tab-btn:hover { background:rgba(255,255,255,0.3); }
     .tab-btn.active { background:white; color:#003153; }
     .tab-btn.view-only { opacity:0.6; cursor:default; }
     .tab-btn.view-only.active { background:#e2e8f0; color:#64748b; }
+    .tab-btn.locked::after {
+      content:'\f023'; font-family:'Font Awesome 6 Free'; font-weight:900;
+      font-size:0.6rem; margin-left:4px; opacity:0.85;
+    }
 
     /* ============ SYNC STATUS PILL ============ */
     .sync-pill {
@@ -115,7 +118,7 @@
     .chip.amber { background:#fffbeb; color:#92400e; }
     .chip.red { background:#fef2f2; color:#991b1b; }
 
-    /* ============ COMBO (SEARCHABLE SELECT) ============ */
+    /* ============ COMBO ============ */
     .combo-wrap { position:relative; width:100%; }
     .combo-input {
       width:100%; padding:10px 34px 10px 14px; border:1px solid #e2e8f0; border-radius:10px;
@@ -166,6 +169,9 @@
     .export-btn { background:#0b5e7c; color:white; padding:10px 15px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:0.88rem; border:none; font-weight:600; }
     .export-btn:disabled { opacity:0.5; cursor:not-allowed; }
     .share-btn { background:#7c3aed; color:white; padding:10px 15px; border-radius:10px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:0.88rem; border:none; font-weight:600; }
+    .mini-action-btn { border:none; padding:6px 11px; border-radius:6px; cursor:pointer; font-size:0.72rem; font-weight:700; color:#fff; }
+    .mini-action-btn.edit { background:#1e40af; }
+    .mini-action-btn.remove { background:#ef4444; }
 
     /* ============ BADGES ============ */
     .badge { padding:4px 10px; border-radius:12px; font-size:0.68rem; font-weight:700; white-space:nowrap; }
@@ -205,6 +211,8 @@
     .data-card.danger h3 { color:#b91c1c; }
     .data-card.cloud { border:2px solid #dbeafe; background:#fbfdff; }
     .data-card.cloud h3 { color:#1d4ed8; }
+    .data-card.security { border:2px solid #fde68a; background:#fffef7; }
+    .data-card.security h3 { color:#b45309; }
 
     /* ============ MODALS ============ */
     .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:1001; padding:20px; overflow-y:auto; }
@@ -234,6 +242,7 @@
     .login-input-wrap { position:relative; margin-bottom:12px; }
     .login-input-wrap input { width:100%; padding:13px 46px 13px 15px; border:1px solid #e2e8f0; border-radius:12px; font-size:0.95rem; outline:none; background:#f8fafc; }
     .login-input-wrap input:focus { border-color:#2d6a4f; box-shadow:0 0 0 3px rgba(45,106,79,0.15); background:#fff; }
+    .login-input-wrap.no-btn input { padding-right:15px; }
     .toggle-pw { position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:#64748b; cursor:pointer; width:34px; height:34px; border-radius:50%; font-size:0.95rem; }
     .toggle-pw:hover { background:#f1f5f9; color:#003153; }
     .login-error { color:#b91c1c; font-size:0.8rem; min-height:18px; margin-bottom:8px; text-align:left; padding-left:4px; }
@@ -255,7 +264,7 @@
     .admin-shield-banner i { color:#b45309; font-size:1.15rem; }
     .admin-shield-banner span { font-size:0.85rem; color:#78350f; line-height:1.45; }
 
-    /* Cloud setup modal helper */
+    /* Cloud modal helpers */
     .cloud-steps { margin-top:15px; padding:12px; background:#fffbeb; border:1px solid #fde68a; border-radius:10px; }
     .cloud-steps p { color:#92400e; font-size:0.78rem; line-height:1.7; margin:0; }
     .cloud-steps ol { margin:6px 0 0 18px; color:#78350f; font-size:0.78rem; line-height:1.7; }
@@ -268,6 +277,18 @@
     }
     .cloud-info-banner i { color:#1d4ed8; font-size:1.15rem; }
     .cloud-info-banner span { font-size:0.85rem; color:#1e3a8a; line-height:1.5; }
+
+    /* User list rows */
+    .user-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px 12px; background:#f8fafc; border-radius:10px; margin-bottom:8px;
+      border-left:4px solid #64748b; gap:10px;
+    }
+    .user-row .ur-info { flex:1; min-width:0; }
+    .user-row .ur-name { font-weight:700; color:#1e293b; font-size:0.88rem; }
+    .user-row .ur-meta { font-size:0.72rem; color:#64748b; margin-top:3px; line-height:1.5; word-break:break-all; }
+    .user-row .ur-meta code { background:#e2e8f0; padding:1px 6px; border-radius:4px; color:#0f172a; font-weight:600; }
+    .user-row .ur-actions { display:flex; gap:6px; flex-shrink:0; }
 
     @media (min-width:768px) {
       .visuals-grid { grid-template-columns:repeat(2,1fr); }
@@ -297,15 +318,22 @@
       </div>
     </div>
     <h2><i class="fas fa-lock"></i> ENGINEERING STORE MATERIALS MANAGEMENT SYSTEM</h2>
-    <p class="subtitle">Enter the access password to open the store management system</p>
+    <p class="subtitle">Log in with your username and password</p>
     <div class="signature-line">Created/Developed by SHIBU BERA</div>
+
+    <div class="login-input-wrap no-btn">
+      <input type="text" id="loginUsername" placeholder="Username" autocomplete="username"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('loginPassword').focus();}">
+    </div>
+
     <div class="login-input-wrap">
-      <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password"
+      <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password"
              onkeydown="if(event.key==='Enter'){attemptLogin();}">
       <button class="toggle-pw" type="button" onclick="togglePasswordVisibility('loginPassword', this)" title="Show / Hide password">
         <i class="fas fa-eye"></i>
       </button>
     </div>
+
     <div class="login-error" id="loginError"></div>
     <div class="sync-pill" id="loginSyncPill" style="background:#f1f5f9;color:#475569;border-color:#e2e8f0;margin-bottom:10px;">
       <span class="dot"></span> <span id="loginSyncText">Checking cloud…</span>
@@ -314,7 +342,8 @@
       <i class="fas fa-sign-in-alt"></i> Login
     </button>
     <div class="login-footer" id="loginFooterHint">
-      First time? Default password is <code>admin123</code><br>Change it immediately from <strong>Password</strong> in the header.
+      <strong>Store Manager:</strong> username <code>admin</code>, default password <code>admin123</code><br>
+      <strong>View-Only users:</strong> use the username &amp; password the manager created for you.
     </div>
   </div>
 </div>
@@ -338,8 +367,8 @@
     <span id="userRoleBadge" class="user-badge manager"><i class="fas fa-user-shield"></i> Store Manager</span>
     <button class="hdr-btn" onclick="openCloudModal()"><i class="fas fa-cloud"></i> Cloud Sync</button>
     <button class="hdr-btn" id="adminPinBtn" onclick="openAdminPinModal()"><i class="fas fa-shield-alt"></i> Edit PIN</button>
-    <button class="hdr-btn" onclick="openUserModal()"><i class="fas fa-users"></i> Users</button>
-    <button class="hdr-btn" onclick="openPasswordModal()"><i class="fas fa-key"></i> Password</button>
+    <button class="hdr-btn" id="usersBtn" onclick="openUserModal()"><i class="fas fa-users"></i> Users</button>
+    <button class="hdr-btn" id="passwordBtn" onclick="openPasswordModal()"><i class="fas fa-key"></i> Password</button>
     <button class="hdr-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
   </div>
   <div class="tab-bar">
@@ -349,7 +378,7 @@
     <button class="tab-btn" data-tab="receipts" onclick="switchTab('receipts')"><i class="fas fa-dolly"></i> Receipts</button>
     <button class="tab-btn" data-tab="valves" onclick="switchTab('valves')"><i class="fas fa-faucet"></i> Valves</button>
     <button class="tab-btn" data-tab="analytics" onclick="switchTab('analytics')"><i class="fas fa-chart-pie"></i> Analytics</button>
-    <button class="tab-btn" data-tab="data" onclick="switchTab('data')"><i class="fas fa-database"></i> Data</button>
+    <button class="tab-btn locked" data-tab="data" onclick="switchTab('data')"><i class="fas fa-database"></i> Data</button>
   </div>
 </div>
 
@@ -591,6 +620,24 @@
   </div>
 
   <div class="data-grid">
+    <!-- ===== SECURITY CARD: Data Section PIN ===== -->
+    <div class="data-card security" style="grid-column:1/-1;">
+      <h3><i class="fas fa-lock"></i> Data Section Security PIN</h3>
+      <p>This PIN protects the Data section. It is required <strong>every time</strong> the Data tab is opened — keeping unknown persons away from import, backup, restore and delete controls. It is separate from your login password and your edit PIN.</p>
+      <div class="data-actions">
+        <button class="btn-admin" style="width:auto;padding:10px 22px;margin-top:0;" onclick="openDataPinSettings()">
+          <i class="fas fa-key"></i> Change Data Section PIN
+        </button>
+        <button class="export-btn" onclick="lockDataNow()">
+          <i class="fas fa-lock"></i> Lock Data Tab Now
+        </button>
+      </div>
+      <div class="filter-summary" style="margin-top:12px;">
+        <span class="chip amber"><i class="fas fa-shield-alt"></i> <span id="dataPinStatusChip">Default PIN active</span></span>
+        <span class="chip"><i class="fas fa-clock"></i> Re-locks every time the Data tab is opened</span>
+      </div>
+    </div>
+
     <div class="data-card cloud" style="grid-column:1/-1;">
       <h3><i class="fas fa-cloud"></i> Cloud Sync (Real-Time Across Devices)</h3>
       <p>Connect this app to a free Firebase Realtime Database so that <strong>every entry you make here appears instantly on every other device</strong> that logs in with the same Store Key. Perfect for GitHub Pages hosting.</p>
@@ -742,6 +789,74 @@
   </div>
 </div>
 
+<!-- ================= DATA TAB LOCK MODAL ================= -->
+<div class="modal" id="dataLockModal">
+  <div class="modal-content" style="max-width:440px;">
+    <div class="modal-header">
+      <h2><i class="fas fa-lock" style="color:#b45309;"></i> Data Section Locked</h2>
+      <button class="close-btn" onclick="closeDataLockModal()">×</button>
+    </div>
+    <div class="admin-shield-banner">
+      <i class="fas fa-shield-alt"></i>
+      <span>The <strong>Data section</strong> contains import, backup, restore and delete-all controls. Enter the <strong>Data Section PIN</strong> to unlock it.</span>
+    </div>
+    <form id="dataLockForm" onsubmit="unlockDataTab(event)">
+      <div class="form-group">
+        <label>Data Section PIN *</label>
+        <div class="login-input-wrap" style="margin-bottom:0;">
+          <input type="password" id="dataLockPassword" required placeholder="Enter Data Section PIN" autocomplete="off"
+                 onkeydown="if(event.key==='Enter'){event.preventDefault();unlockDataTab(event);}">
+          <button class="toggle-pw" type="button" onclick="togglePasswordVisibility('dataLockPassword', this)" title="Show / Hide PIN">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      <div class="login-error" id="dataLockError"></div>
+      <button type="submit" class="btn-admin"><i class="fas fa-unlock"></i> Unlock Data Section</button>
+      <button type="button" class="btn-cancel" onclick="closeDataLockModal()">Cancel</button>
+    </form>
+    <div style="margin-top:14px; padding:10px 12px; background:#fffbeb; border:1px solid #fde68a; border-radius:10px;">
+      <p style="color:#92400e; font-size:0.78rem; line-height:1.55;" id="dataLockHint">
+        <i class="fas fa-info-circle"></i> Default Data Section PIN: <strong>data123</strong> — change it from the Data section after unlocking.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CHANGE DATA PIN MODAL ================= -->
+<div class="modal" id="dataPinSettingsModal">
+  <div class="modal-content" style="max-width:480px;">
+    <div class="modal-header">
+      <h2><i class="fas fa-key" style="color:#b45309;"></i> Change Data Section PIN</h2>
+      <button class="close-btn" onclick="closeDataPinSettings()">×</button>
+    </div>
+    <div class="admin-shield-banner">
+      <i class="fas fa-user-lock"></i>
+      <span>This PIN is required <strong>every time</strong> the Data tab is opened. It is separate from your login password and from your edit / revert PIN.</span>
+    </div>
+    <form id="dataPinForm" onsubmit="changeDataPin(event)">
+      <div class="form-group">
+        <label>Current Data Section PIN *</label>
+        <input type="password" id="currentDataPin" required placeholder="Enter current Data PIN" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>New Data Section PIN *</label>
+        <input type="password" id="newDataPin" required minlength="4" placeholder="Minimum 4 characters" autocomplete="new-password">
+      </div>
+      <div class="form-group">
+        <label>Confirm New Data Section PIN *</label>
+        <input type="password" id="confirmDataPin" required placeholder="Re-enter new Data PIN" autocomplete="new-password">
+      </div>
+      <button type="submit" class="btn-admin"><i class="fas fa-save"></i> Update Data Section PIN</button>
+    </form>
+    <div style="margin-top:15px; padding:12px; background:#fffbeb; border-radius:10px; border:1px solid #fde68a;">
+      <p style="color:#92400e; font-size:0.8rem; line-height:1.6;" id="dataPinHintText">
+        <i class="fas fa-info-circle"></i> Default Data Section PIN is <strong>data123</strong>. Change it right away for security.
+      </p>
+    </div>
+  </div>
+</div>
+
 <!-- ================= DELETE ALL MODAL ================= -->
 <div class="modal" id="deleteModal">
   <div class="modal-content">
@@ -769,32 +884,97 @@
 
 <!-- ================= USER MANAGEMENT MODAL ================= -->
 <div class="modal" id="userModal">
-  <div class="modal-content">
+  <div class="modal-content" style="max-width:620px;">
     <div class="modal-header">
       <h2><i class="fas fa-users"></i> User Management</h2>
       <button class="close-btn" onclick="closeUserModal()">×</button>
     </div>
-    <p style="color:#64748b; margin-bottom:15px; font-size:0.88rem;">Manage up to 5 view-only users. Store Manager has full access.</p>
-    <div style="margin-bottom:15px; padding:10px; background:#dbeafe; border-radius:10px;">
-      <strong style="color:#1e40af;"><i class="fas fa-user-shield"></i> Store Manager:</strong> <span id="managerNameDisplay">Admin</span> (Full Access)
+    <p style="color:#64748b; margin-bottom:15px; font-size:0.88rem; line-height:1.55;">
+      Create up to <strong>5 view-only users</strong>. Each user gets their own <strong>username &amp; password</strong> and can log in on any device to see the site in view-only mode — no data entry, no edits, no Data tab.
+    </p>
+
+    <div style="margin-bottom:15px; padding:12px; background:#dbeafe; border-radius:10px; border-left:5px solid #1d4ed8;">
+      <strong style="color:#1e40af; font-size:0.88rem;"><i class="fas fa-user-shield"></i> Store Manager Account (full access)</strong>
+      <div style="font-size:0.78rem; color:#1e3a8a; margin-top:6px; line-height:1.6;">
+        Username: <code style="background:#fff;padding:1px 6px;border-radius:4px;font-weight:700;">admin</code>
+        &nbsp;•&nbsp;
+        Password: <code style="background:#fff;padding:1px 6px;border-radius:4px;font-weight:700;">••••••••</code>
+        &nbsp;(change via the <strong>Password</strong> button)
+      </div>
     </div>
+
+    <div class="section-title" style="margin-bottom:8px;"><i class="fas fa-user-friends"></i> View-Only Users</div>
     <div id="userListContainer"></div>
+
     <div style="margin-top:15px; border-top:1px solid #e2e8f0; padding-top:15px;">
+      <div class="section-title" style="margin-bottom:10px;"><i class="fas fa-user-plus"></i> Add New View-Only User</div>
+
       <div class="form-group">
-        <label>Add View-Only User</label>
-        <div style="display:flex; gap:10px;">
-          <input type="text" id="newUserName" placeholder="Enter name..." style="flex:2; padding:10px; border:1px solid #e2e8f0; border-radius:10px;">
-          <button onclick="addViewerUser()" class="btn-primary" style="width:auto; padding:10px 20px; margin-top:0;">Add User</button>
+        <label>Full Name *</label>
+        <input type="text" id="newUserName" placeholder="e.g. Ramesh Kumar" style="padding:10px;">
+      </div>
+      <div class="form-group">
+        <label>Login Username *</label>
+        <input type="text" id="newUserUsername" placeholder="e.g. ramesh" autocomplete="off" style="padding:10px;">
+      </div>
+      <div class="form-group">
+        <label>Login Password * (min 4 characters)</label>
+        <div class="login-input-wrap" style="margin-bottom:0;">
+          <input type="text" id="newUserPassword" placeholder="e.g. ramesh@2024" autocomplete="new-password" style="padding:10px 46px 10px 15px;">
+          <button class="toggle-pw" type="button" onclick="togglePasswordVisibility('newUserPassword', this)" title="Show / Hide password">
+            <i class="fas fa-eye"></i>
+          </button>
         </div>
       </div>
-      <p style="font-size:0.8rem; color:#64748b; margin-top:5px;">Max 5 view-only users. Users can view all data but cannot edit.</p>
-      <button onclick="openPasswordModal()" class="btn-primary" style="background:#1e3a5f; margin-top:12px;">
-        <i class="fas fa-key"></i> Change Login Password
+      <button onclick="addViewerUser()" class="btn-primary" style="margin-top:4px;">
+        <i class="fas fa-user-plus"></i> Create View-Only User
+      </button>
+
+      <p style="font-size:0.78rem; color:#64748b; margin-top:12px; line-height:1.55;">
+        <i class="fas fa-info-circle"></i> These users can log in on any computer / phone using the credentials you set here. If cloud sync is active, the accounts sync automatically to every device.
+      </p>
+
+      <button onclick="openPasswordModal()" class="btn-primary" style="background:#1e3a5f; margin-top:14px;">
+        <i class="fas fa-key"></i> Change Store Manager Password
       </button>
       <button onclick="openAdminPinModal()" class="btn-primary" style="background:#b45309; margin-top:8px;">
         <i class="fas fa-shield-alt"></i> Change Edit / Revert Admin PIN
       </button>
+      <button onclick="openDataPinSettingsFromUsers()" class="btn-primary" style="background:#0f766e; margin-top:8px;">
+        <i class="fas fa-lock"></i> Change Data Section PIN
+      </button>
     </div>
+  </div>
+</div>
+
+<!-- ================= EDIT VIEWER USER MODAL ================= -->
+<div class="modal" id="viewerEditModal">
+  <div class="modal-content" style="max-width:460px;">
+    <div class="modal-header">
+      <h2><i class="fas fa-user-edit"></i> Edit View-Only User</h2>
+      <button class="close-btn" onclick="closeViewerEditModal()">×</button>
+    </div>
+    <form id="viewerEditForm" onsubmit="saveViewerEdit(event)">
+      <input type="hidden" id="editUserIndex">
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="editUserName" required>
+      </div>
+      <div class="form-group">
+        <label>Login Username *</label>
+        <input type="text" id="editUserUsername" required autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>Login Password *</label>
+        <div class="login-input-wrap" style="margin-bottom:0;">
+          <input type="text" id="editUserPassword" required minlength="4" autocomplete="new-password">
+          <button class="toggle-pw" type="button" onclick="togglePasswordVisibility('editUserPassword', this)" title="Show / Hide password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+    </form>
   </div>
 </div>
 
@@ -802,11 +982,11 @@
 <div class="modal" id="passwordModal">
   <div class="modal-content">
     <div class="modal-header">
-      <h2><i class="fas fa-key"></i> Change Login Password</h2>
+      <h2><i class="fas fa-key"></i> Change Store Manager Password</h2>
       <button class="close-btn" onclick="closePasswordModal()">×</button>
     </div>
     <p style="color:#64748b; margin-bottom:15px; font-size:0.88rem;">
-      This password is required to open the app and also to confirm the <strong>Delete All</strong> action.
+      This password is required to open the app as <strong>admin</strong>, and also to confirm the <strong>Delete All</strong> action.
       When cloud sync is on, the new password is applied to every connected device.
     </p>
     <form id="passwordForm" onsubmit="changePassword(event)">
@@ -833,7 +1013,7 @@
   </div>
 </div>
 
-<!-- ================= ADMIN AUTH MODAL (edit / revert verification) ================= -->
+<!-- ================= ADMIN AUTH MODAL ================= -->
 <div class="modal" id="adminAuthModal">
   <div class="modal-content" style="max-width:430px;">
     <div class="modal-header">
@@ -862,7 +1042,7 @@
     <div style="margin-top:14px; padding:10px 12px; background:#fffbeb; border:1px solid #fde68a; border-radius:10px;">
       <p style="color:#92400e; font-size:0.78rem; line-height:1.55;">
         <i class="fas fa-info-circle"></i> This PIN protects material edits, material deletions and
-        reverts of issued / received records. It is separate from the login password.
+        reverts of issued / received records. It is separate from the login password and Data PIN.
         Default PIN: <strong>edit123</strong> — change it via the <strong>Edit PIN</strong> button in the header.
       </p>
     </div>
@@ -936,7 +1116,7 @@
 
     <div class="cloud-info-banner">
       <i class="fas fa-broadcast-tower"></i>
-      <span>Connect this app to a <strong>free Firebase Realtime Database</strong>. Once connected, any data you add, issue or receive on this device will appear <strong>instantly on every other device</strong> that logs in with the same Store Key.</span>
+      <span>Connect this app to a <strong>free Firebase Realtime Database</strong>. Once connected, any data you add, issue or receive on this device will appear <strong>instantly on every other device</strong> that logs in with the same Store Key. User accounts and security PINs are synced too.</span>
     </div>
 
     <form id="cloudForm" onsubmit="saveCloudConfig(event)">
@@ -1031,7 +1211,9 @@ function toArray(v){
    PASSWORD / LOGIN
    ========================================================= */
 const DEFAULT_PASSWORD = "admin123";
+const DEFAULT_MANAGER_USERNAME = "admin";
 const PW_STORAGE_KEY  = 'haldiaAppPassword';
+const MANAGER_USERNAME_KEY = 'haldiaManagerUsername';
 const LOGIN_FLAG_KEY  = 'haldiaLoggedIn';
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_SECONDS = 30;
@@ -1045,71 +1227,117 @@ function setAppPassword(pw){
   pushPartialToCloud({ appPassword: pw });
 }
 function isDefaultPassword(){ return !localStorage.getItem(PW_STORAGE_KEY); }
+
+function getManagerUsername(){
+  return localStorage.getItem(MANAGER_USERNAME_KEY) || DEFAULT_MANAGER_USERNAME;
+}
+function setManagerUsername(u){
+  localStorage.setItem(MANAGER_USERNAME_KEY, u);
+  pushPartialToCloud({ managerUsername: u });
+}
+
 function isLoggedIn(){ return sessionStorage.getItem(LOGIN_FLAG_KEY) === 'true'; }
 
 function attemptLogin(){
-  const input = $('loginPassword');
-  const errEl = $('loginError');
-  const card  = $('loginCard');
-  const btn   = $('loginBtn');
+  const userEl = $('loginUsername');
+  const input  = $('loginPassword');
+  const errEl  = $('loginError');
+  const card   = $('loginCard');
+  const btn    = $('loginBtn');
 
   if (Date.now() < lockoutUntil){
     const secs = Math.ceil((lockoutUntil - Date.now()) / 1000);
     errEl.textContent = `Too many failed attempts. Please wait ${secs}s.`;
     return;
   }
-  const pw = input.value;
-  if (!pw){ errEl.textContent = 'Please enter the password.'; return; }
 
-  if (pw === getAppPassword()){
+  const username = (userEl.value || '').trim();
+  const pw = input.value;
+
+  if (!username){ errEl.textContent = 'Please enter your username.'; userEl.focus(); return; }
+  if (!pw){ errEl.textContent = 'Please enter your password.'; input.focus(); return; }
+
+  // ---- Store Manager check ----
+  if (username.toLowerCase() === getManagerUsername().toLowerCase() && pw === getAppPassword()){
     failedAttempts = 0;
     sessionStorage.setItem(LOGIN_FLAG_KEY, 'true');
+    currentUser = { name:'Store Manager', role:'manager', username: getManagerUsername() };
+    sessionStorage.setItem('haldiaCurrentUser', JSON.stringify(currentUser));
     errEl.textContent = '';
-    input.value = '';
+    userEl.value = ''; input.value = '';
     hideLogin();
+    updateUIForRole();
+    updateDashboard();
     updateDefaultPasswordWarning();
-  } else {
-    failedAttempts++;
-    errEl.textContent = 'Incorrect password. Please try again.';
-    input.value = '';
-    card.classList.remove('shake');
-    void card.offsetWidth;
-    card.classList.add('shake');
-    if (failedAttempts >= MAX_LOGIN_ATTEMPTS){
-      lockoutUntil = Date.now() + LOCKOUT_SECONDS * 1000;
-      btn.disabled = true;
-      let remaining = LOCKOUT_SECONDS;
-      const timer = setInterval(() => {
-        remaining--;
-        errEl.textContent = `Too many failed attempts. Locked for ${remaining}s.`;
-        if (remaining <= 0){
-          clearInterval(timer);
-          btn.disabled = false;
-          failedAttempts = 0;
-          errEl.textContent = '';
-        }
-      }, 1000);
-    }
+    return;
+  }
+
+  // ---- View-only user check ----
+  const viewer = viewOnlyUsers.find(u =>
+    u && u.username && u.password &&
+    u.username.toLowerCase() === username.toLowerCase() &&
+    u.password === pw
+  );
+  if (viewer){
+    failedAttempts = 0;
+    sessionStorage.setItem(LOGIN_FLAG_KEY, 'true');
+    currentUser = { name: viewer.name, role: 'viewer', username: viewer.username };
+    sessionStorage.setItem('haldiaCurrentUser', JSON.stringify(currentUser));
+    errEl.textContent = '';
+    userEl.value = ''; input.value = '';
+    hideLogin();
+    updateUIForRole();
+    updateDashboard();
+    updateDefaultPasswordWarning();
+    return;
+  }
+
+  // ---- Failure ----
+  failedAttempts++;
+  errEl.textContent = 'Incorrect username or password. Please try again.';
+  input.value = '';
+  card.classList.remove('shake');
+  void card.offsetWidth;
+  card.classList.add('shake');
+
+  if (failedAttempts >= MAX_LOGIN_ATTEMPTS){
+    lockoutUntil = Date.now() + LOCKOUT_SECONDS * 1000;
+    btn.disabled = true;
+    let remaining = LOCKOUT_SECONDS;
+    const timer = setInterval(() => {
+      remaining--;
+      errEl.textContent = `Too many failed attempts. Locked for ${remaining}s.`;
+      if (remaining <= 0){
+        clearInterval(timer);
+        btn.disabled = false;
+        failedAttempts = 0;
+        errEl.textContent = '';
+      }
+    }, 1000);
   }
 }
+
 function hideLogin(){ $('loginOverlay').style.display = 'none'; document.body.style.overflow = ''; }
 function showLogin(){
   $('loginOverlay').style.display = 'flex';
   document.body.style.overflow = 'hidden';
+  $('loginUsername').value = '';
   $('loginPassword').value = '';
   $('loginError').textContent = '';
-  $('loginFooterHint').style.display = isDefaultPassword() ? 'block' : 'none';
-  setTimeout(() => $('loginPassword').focus(), 120);
+  $('loginFooterHint').style.display = 'block';
+  setTimeout(() => $('loginUsername').focus(), 120);
 }
 function logout(){
   if (!confirm('Log out of the system?')) return;
   sessionStorage.removeItem(LOGIN_FLAG_KEY);
   closeUserModal(); closePasswordModal(); closeShareModal(); closeDeleteModal();
   closeAdminAuthModal(); closeAdminPinSettings(); closeCloudModal();
+  closeDataLockModal(); closeViewerEditModal(); closeDataPinSettings();
   showLogin();
 }
 function togglePasswordVisibility(inputId, btn){
   const input = $(inputId);
+  if (!input) return;
   const icon = btn.querySelector('i');
   if (input.type === 'password'){ input.type = 'text'; icon.className = 'fas fa-eye-slash'; }
   else { input.type = 'password'; icon.className = 'fas fa-eye'; }
@@ -1200,7 +1428,123 @@ function changeAdminPin(e){
 }
 
 /* =========================================================
-   CLOUD SYNC  (Firebase Realtime Database)
+   DATA SECTION PIN  —  protects the Data tab
+   ========================================================= */
+const DEFAULT_DATA_PIN = "data123";
+const DATA_PIN_STORAGE_KEY = 'haldiaDataPin';
+
+function getDataPin(){ return localStorage.getItem(DATA_PIN_STORAGE_KEY) || DEFAULT_DATA_PIN; }
+function setDataPin(pin){
+  localStorage.setItem(DATA_PIN_STORAGE_KEY, pin);
+  pushPartialToCloud({ dataPin: pin });
+  updateDataPinStatusChip();
+}
+function isDefaultDataPin(){ return !localStorage.getItem(DATA_PIN_STORAGE_KEY); }
+
+function updateDataPinStatusChip(){
+  const chip = $('dataPinStatusChip');
+  if (!chip) return;
+  if (isDefaultDataPin()){
+    chip.innerHTML = 'Default PIN active (<strong>data123</strong>) — please change it';
+  } else {
+    chip.innerHTML = 'Custom Data PIN set ✓';
+  }
+}
+
+/* --- Data tab lock modal --- */
+let pendingDataTab = null;
+
+function closeDataLockModal(){
+  $('dataLockModal').style.display = 'none';
+  pendingDataTab = null;
+}
+function unlockDataTab(e){
+  if (e) e.preventDefault();
+  const pw = $('dataLockPassword').value;
+  if (!pw){
+    $('dataLockError').textContent = 'Please enter the Data Section PIN.';
+    return;
+  }
+  if (pw !== getDataPin()){
+    $('dataLockError').textContent = '❌ Incorrect Data Section PIN. Please try again.';
+    $('dataLockPassword').value = '';
+    const card = $('dataLockModal').querySelector('.modal-content');
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+    return;
+  }
+  $('dataLockError').textContent = '';
+  $('dataLockPassword').value = '';
+  $('dataLockModal').style.display = 'none';
+  const target = pendingDataTab || 'data';
+  pendingDataTab = null;
+  openTabNow(target);
+}
+
+/* Opens a tab immediately (used after data PIN unlock) */
+function openTabNow(tab){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  Object.values(TAB_MAP).forEach(id => { const el = $(id); if (el) el.style.display = 'none'; });
+  const target = $(TAB_MAP[tab]);
+  if (target) target.style.display = 'block';
+
+  if (tab === 'dashboard') updateDashboard();
+  else if (tab === 'inventory'){ populateMachineFilter(); updateTable(); }
+  else if (tab === 'issued'){ refreshMaterialCombos(); updateIssuedTable(); }
+  else if (tab === 'receipts'){ refreshMaterialCombos(); updateReceiptsTable(); }
+  else if (tab === 'valves'){ refreshMaterialCombos(); updateValveDashboard(); }
+  else if (tab === 'analytics') updateAnalytics();
+  else if (tab === 'data') renderDataTab();
+
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* Manually re-lock the Data tab from within it */
+function lockDataNow(){
+  const active = document.querySelector('.tab-btn.active');
+  if (active && active.dataset.tab === 'data'){
+    // switch away to dashboard then return to trigger the lock
+    openTabNow('dashboard');
+    setTimeout(() => switchTab('data'), 150);
+  }
+  alert('🔒 Data tab locked.\n\nThe Data Section PIN will be required the next time you open it.');
+}
+
+/* --- Change Data PIN modal --- */
+function openDataPinSettings(){
+  if (!isManager()){ alert('Only the Store Manager can change the Data PIN.'); return; }
+  $('dataPinForm').reset();
+  $('dataPinHintText').innerHTML = isDefaultDataPin()
+    ? '<i class="fas fa-info-circle"></i> You are still using the default Data Section PIN (<strong>data123</strong>). Change it now for security.'
+    : '<i class="fas fa-info-circle"></i> Keep this PIN safe. If forgotten, clear this page\'s local storage to reset it to the default (<strong>data123</strong>).';
+  $('dataPinSettingsModal').style.display = 'block';
+}
+function openDataPinSettingsFromUsers(){
+  closeUserModal();
+  openDataPinSettings();
+}
+function closeDataPinSettings(){ $('dataPinSettingsModal').style.display = 'none'; }
+
+function changeDataPin(e){
+  e.preventDefault();
+  if (!isManager()){ alert('Only the Store Manager can change the Data PIN.'); return; }
+  const cur = $('currentDataPin').value;
+  const nw  = $('newDataPin').value;
+  const cf  = $('confirmDataPin').value;
+
+  if (cur !== getDataPin()){ alert('❌ Current Data Section PIN is incorrect.'); return; }
+  if (nw.length < 4){ alert('❌ New Data PIN must be at least 4 characters long.'); return; }
+  if (nw === cur){ alert('❌ New PIN must be different from the current PIN.'); return; }
+  if (nw !== cf){ alert('❌ New PIN and confirmation do not match.'); return; }
+
+  setDataPin(nw);
+  closeDataPinSettings();
+  alert('✅ Data Section PIN updated successfully.\n\nUse this new PIN whenever you open the Data tab.');
+}
+
+/* =========================================================
+   CLOUD SYNC
    ========================================================= */
 const CLOUD_CONFIG_KEY = 'haldiaCloudConfig';
 let firebaseApp = null;
@@ -1221,7 +1565,6 @@ function setCloudConfig(cfg){
 function getCloudRoot(){
   const cfg = getCloudConfig();
   if (!cfg || !cfg.storeKey) return null;
-  // sanitize store key (Firebase paths can't contain . # $ [ ] /)
   const safe = String(cfg.storeKey).replace(/[.#$\[\]\/]/g, '_');
   return 'engineering-store/' + safe;
 }
@@ -1297,14 +1640,13 @@ function updateCloudStatus(state, message){
   if (disc) disc.style.display = cloudEnabled ? 'inline-flex' : 'none';
 }
 
-/* --- push --- */
 function pushPartialToCloud(partial){
   if (!cloudEnabled || !firebaseDb) return;
   const root = getCloudRoot();
   if (!root) return;
   applyingRemote = true;
   updateCloudStatus('syncing');
-  const payload = Object.assign({}, partial, { updatedAt: Date.now(), updatedBy: currentUser.name || 'unknown' });
+  const payload = Object.assign({}, partial, { updatedAt: Date.now(), updatedBy: (currentUser && currentUser.name) || 'unknown' });
   firebaseDb.ref(root).update(payload)
     .then(() => { updateCloudStatus('online'); })
     .catch(err => {
@@ -1329,8 +1671,10 @@ function pushAllToCloud(){
     viewOnlyUsers: viewOnlyUsers,
     appPassword: getAppPassword(),
     adminPassword: getAdminPassword(),
+    dataPin: getDataPin(),
+    managerUsername: getManagerUsername(),
     updatedAt: Date.now(),
-    updatedBy: currentUser.name || 'unknown'
+    updatedBy: (currentUser && currentUser.name) || 'unknown'
   })
   .then(() => { updateCloudStatus('online'); })
   .catch(err => {
@@ -1342,7 +1686,6 @@ function pushAllToCloud(){
   });
 }
 
-/* --- pull & listen --- */
 function applyRemoteData(v){
   if (!v) return;
   applyingRemote = true;
@@ -1363,14 +1706,27 @@ function applyRemoteData(v){
   if (typeof v.adminPassword === 'string' && v.adminPassword.length){
     localStorage.setItem(ADMIN_PW_STORAGE_KEY, v.adminPassword);
   }
+  if (typeof v.dataPin === 'string' && v.dataPin.length){
+    localStorage.setItem(DATA_PIN_STORAGE_KEY, v.dataPin);
+  }
+  if (typeof v.managerUsername === 'string' && v.managerUsername.length){
+    localStorage.setItem(MANAGER_USERNAME_KEY, v.managerUsername);
+  }
 
-  // persist local copy so offline reload still shows latest
   localStorage.setItem('haldiaStoreData',   JSON.stringify(storeData));
   localStorage.setItem('haldiaIssuedData',  JSON.stringify(issuedRecords));
   localStorage.setItem('haldiaReceiptData', JSON.stringify(receiptRecords));
   localStorage.setItem('haldiaViewOnlyUsers', JSON.stringify(viewOnlyUsers));
 
-  // refresh UI
+  if (currentUser && currentUser.role === 'viewer'){
+    const stillExists = viewOnlyUsers.find(u => u.username === currentUser.username);
+    if (!stillExists){
+      sessionStorage.removeItem(LOGIN_FLAG_KEY);
+      sessionStorage.removeItem('haldiaCurrentUser');
+      setTimeout(() => { showLogin(); alert('Your view-only account has been removed by the Store Manager.'); }, 200);
+    }
+  }
+
   try { refreshMaterialCombos(); } catch(e){}
   try { populateMachineFilter(); } catch(e){}
   try { updateDashboard(); } catch(e){}
@@ -1382,6 +1738,7 @@ function applyRemoteData(v){
   try { renderUserList(); } catch(e){}
   try { renderDataTab(); } catch(e){}
   try { updateDefaultPasswordWarning(); } catch(e){}
+  try { updateDataPinStatusChip(); } catch(e){}
 
   setTimeout(() => { applyingRemote = false; }, 350);
 }
@@ -1409,7 +1766,6 @@ function initialCloudPull(){
         if (hasData){
           applyRemoteData(v);
         } else {
-          // First time for this Store Key — seed the cloud with local data.
           pushAllToCloud();
         }
         cloudConnectedOnce = true;
@@ -1437,7 +1793,7 @@ function attachCloudListeners(){
 
   cloudListener = firebaseDb.ref(root);
   cloudListener.on('value', snap => {
-    if (applyingRemote) return;      // ignore our own writes
+    if (applyingRemote) return;
     const v = snap.val();
     if (!v) return;
     applyRemoteData(v);
@@ -1455,7 +1811,6 @@ function detachCloudListeners(){
   }
 }
 
-/* --- UI: cloud modal --- */
 function openCloudModal(){
   const cfg = getCloudConfig();
   if (cfg){
@@ -1463,7 +1818,6 @@ function openCloudModal(){
     if (cfg.storeKey) $('cloudStoreKey').value = cfg.storeKey;
   } else {
     $('cloudForm').reset();
-    // default store key suggestion
     $('cloudStoreKey').value = 'store-' + Math.random().toString(36).slice(2, 10);
   }
   $('cloudModal').style.display = 'block';
@@ -1481,7 +1835,6 @@ function saveCloudConfig(e){
 
   let parsed;
   try {
-    // allow both wrapped firebaseConfig = {...} and bare {...}
     let clean = raw.replace(/^[\s\S]*?=\s*/, '').replace(/;\s*$/, '').trim();
     if (!clean.startsWith('{')) clean = raw;
     parsed = JSON.parse(clean);
@@ -1497,7 +1850,6 @@ function saveCloudConfig(e){
 
   setCloudConfig({ firebaseConfig: parsed, storeKey });
 
-  // Re-initialize
   detachCloudListeners();
   cloudEnabled = false;
   firebaseDb = null;
@@ -1515,16 +1867,12 @@ function saveCloudConfig(e){
     attachCloudListeners();
     updateCloudStatus(cloudEnabled ? 'online' : 'offline');
     renderDataTab();
-    alert('✅ Cloud sync connected.\n\nAll data will now be shared in real time with every device using Store Key "' + storeKey + '".');
+    alert('✅ Cloud sync connected.\n\nAll data — including user accounts and security PINs — will now be shared in real time with every device using Store Key "' + storeKey + '".');
   });
 }
 
 function disconnectCloud(silent){
-  if (!silent){
-    if (!confirm('Disconnect cloud sync? This device will keep its local copy but will no longer share data with other devices.')) return;
-  } else {
-    if (!confirm('Disconnect cloud sync?\n\nThis device will stop syncing with other devices. Local data will remain on this device only.')) return;
-  }
+  if (!confirm('Disconnect cloud sync?\n\nThis device will stop syncing with other devices. Local data will remain on this device only.')) return;
   detachCloudListeners();
   cloudEnabled = false;
   firebaseDb = null;
@@ -1545,7 +1893,7 @@ function forceCloudSync(){
 }
 
 /* =========================================================
-   SEARCHABLE COMBO (custom searchable select)
+   SEARCHABLE COMBO
    ========================================================= */
 function createCombo(wrapEl, opts){
   opts = opts || {};
@@ -1684,14 +2032,15 @@ function materialComboItems(includeAll, filterFn){
    USER MANAGEMENT
    ========================================================= */
 let viewOnlyUsers = [];
-let currentUser = { name: "Store Manager", role: "manager" };
+let currentUser = { name:'Store Manager', role:'manager', username: DEFAULT_MANAGER_USERNAME };
+
 (function(){
   const savedUsers = localStorage.getItem('haldiaViewOnlyUsers');
   if (savedUsers) { try { viewOnlyUsers = JSON.parse(savedUsers) || []; } catch(e){ viewOnlyUsers = []; } }
 })();
 
-function isManager(){ return currentUser.role === 'manager'; }
-function isViewer(){ return currentUser.role === 'viewer'; }
+function isManager(){ return currentUser && currentUser.role === 'manager'; }
+function isViewer(){ return currentUser && currentUser.role === 'viewer'; }
 
 function updateUIForRole(){
   const isViewerMode = isViewer();
@@ -1707,6 +2056,20 @@ function updateUIForRole(){
   ['viewOnlyBanner','viewOnlyBannerInv','viewOnlyBannerIssued','viewOnlyBannerReceipts','viewOnlyBannerData'].forEach(id => {
     const el = $(id);
     if (el) el.style.display = isViewerMode ? 'flex' : 'none';
+  });
+
+  // Hide Data tab completely for viewers
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('view-only', isViewerMode);
+    if (btn.dataset.tab === 'data'){
+      btn.style.display = isViewerMode ? 'none' : 'flex';
+    }
+  });
+
+  const headerManagerOnly = ['adminPinBtn','usersBtn','passwordBtn'];
+  headerManagerOnly.forEach(id => {
+    const el = $(id);
+    if (el) el.classList.toggle('hidden', isViewerMode);
   });
 
   const editElements = [
@@ -1725,14 +2088,13 @@ function updateUIForRole(){
   const floatBtn = $('addFloatingBtn');
   if (floatBtn) floatBtn.classList.toggle('view-only-mode', isViewerMode);
 
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('view-only', isViewerMode));
-
   ['#addForm','#issueForm','#receiptForm'].forEach(sel => {
     document.querySelectorAll(sel + ' input, ' + sel + ' select, ' + sel + ' textarea')
       .forEach(el => { el.disabled = isViewerMode; });
   });
 
   updateDefaultPasswordWarning();
+  updateDataPinStatusChip();
 }
 
 function saveUsersToStorage(){
@@ -1740,54 +2102,116 @@ function saveUsersToStorage(){
   renderUserList();
   pushPartialToCloud({ viewOnlyUsers: viewOnlyUsers });
 }
+
 function renderUserList(){
   const container = $('userListContainer');
   if (!container) return;
   if (!viewOnlyUsers.length){
-    container.innerHTML = '<p style="color:#64748b; font-style:italic;">No view-only users added yet.</p>';
+    container.innerHTML = '<p style="color:#64748b; font-style:italic; padding:10px 0;">No view-only users added yet.</p>';
     return;
   }
   container.innerHTML = viewOnlyUsers.map((user, index) => `
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f8fafc; border-radius:8px; margin-bottom:6px;">
-      <span><i class="fas fa-user" style="color:#4b5563;"></i> ${esc(user.name)}</span>
-      <div>
-        <span class="badge badge-viewer">View-Only</span>
-        <button onclick="removeViewerUser(${index})" style="background:#ef4444; color:white; border:none; padding:4px 10px; border-radius:5px; margin-left:8px; cursor:pointer;">Remove</button>
+    <div class="user-row">
+      <div class="ur-info">
+        <div class="ur-name"><i class="fas fa-user" style="color:#4b5563;"></i> ${esc(user.name || '-')}</div>
+        <div class="ur-meta">
+          Username: <code>${esc(user.username || 'NOT SET')}</code>
+          &nbsp;•&nbsp;
+          Password: <code>${esc(user.password || 'NOT SET')}</code>
+        </div>
+      </div>
+      <div class="ur-actions">
+        <button class="mini-action-btn edit" onclick="editViewerUser(${index})" title="Edit"><i class="fas fa-pen"></i></button>
+        <button class="mini-action-btn remove" onclick="removeViewerUser(${index})" title="Remove"><i class="fas fa-trash"></i></button>
       </div>
     </div>`).join('');
 }
+
 function addViewerUser(){
   if (!isManager()){ alert('Only the Store Manager can manage users.'); return; }
-  const nameInput = $('newUserName');
-  const name = nameInput.value.trim();
-  if (!name){ alert('Please enter a name.'); return; }
+
+  const name = ($('newUserName').value || '').trim();
+  const username = ($('newUserUsername').value || '').trim();
+  const password = ($('newUserPassword').value || '').trim();
+
+  if (!name){ alert('Please enter the full name.'); return; }
+  if (!username){ alert('Please enter a login username.'); return; }
+  if (!password){ alert('Please enter a login password.'); return; }
+  if (password.length < 4){ alert('Password must be at least 4 characters long.'); return; }
   if (viewOnlyUsers.length >= 5){ alert('Maximum 5 view-only users allowed.'); return; }
-  if (viewOnlyUsers.find(u => u.name.toLowerCase() === name.toLowerCase())){ alert('User already exists.'); return; }
-  viewOnlyUsers.push({ name });
+  if (username.toLowerCase() === getManagerUsername().toLowerCase()){
+    alert('❌ That username is reserved for the Store Manager. Please pick another one.'); return;
+  }
+  if (viewOnlyUsers.find(u => (u.username || '').toLowerCase() === username.toLowerCase())){
+    alert('❌ This username is already taken. Please pick another one.'); return;
+  }
+
+  viewOnlyUsers.push({ name, username, password });
   saveUsersToStorage();
-  nameInput.value = '';
-  alert(`User "${name}" added as view-only.`);
+  $('newUserName').value = '';
+  $('newUserUsername').value = '';
+  $('newUserPassword').value = '';
+  alert(`✅ View-only user "${name}" created.\n\nThey can now log in on any device using:\nUsername: ${username}\nPassword: ${password}`);
 }
+
 function removeViewerUser(index){
   if (!isManager()){ alert('Only the Store Manager can manage users.'); return; }
-  if (confirm(`Remove "${viewOnlyUsers[index].name}" from view-only users?`)){
+  const user = viewOnlyUsers[index];
+  if (!user) return;
+  if (confirm(`Remove "${user.name}" (username: ${user.username}) from view-only users?\n\nThey will no longer be able to log in.`)){
     viewOnlyUsers.splice(index, 1);
     saveUsersToStorage();
-    if (isViewer() && !viewOnlyUsers.find(u => u.name === currentUser.name)) switchToManager();
   }
 }
-function switchToManager(){
-  currentUser = { name: 'Store Manager', role: 'manager' };
-  sessionStorage.setItem('haldiaCurrentUser', JSON.stringify(currentUser));
-  updateUIForRole(); closeUserModal(); updateDashboard();
+
+function editViewerUser(index){
+  if (!isManager()){ alert('Only the Store Manager can manage users.'); return; }
+  const user = viewOnlyUsers[index];
+  if (!user) return;
+  $('editUserIndex').value = index;
+  $('editUserName').value = user.name || '';
+  $('editUserUsername').value = user.username || '';
+  $('editUserPassword').value = user.password || '';
+  $('viewerEditModal').style.display = 'block';
 }
-function requestManagerSwitch(){
-  const pw = prompt('Enter the login password to switch to Store Manager mode:');
-  if (pw === null) return;
-  if (pw === getAppPassword()){ switchToManager(); alert('Switched to Store Manager mode.'); }
-  else alert('❌ Incorrect password.');
+function closeViewerEditModal(){ $('viewerEditModal').style.display = 'none'; }
+
+function saveViewerEdit(e){
+  e.preventDefault();
+  if (!isManager()){ alert('Only the Store Manager can manage users.'); return; }
+  const idx = parseInt($('editUserIndex').value, 10);
+  const user = viewOnlyUsers[idx];
+  if (!user) return;
+
+  const name = ($('editUserName').value || '').trim();
+  const username = ($('editUserUsername').value || '').trim();
+  const password = ($('editUserPassword').value || '').trim();
+
+  if (!name){ alert('Please enter the full name.'); return; }
+  if (!username){ alert('Please enter a login username.'); return; }
+  if (!password || password.length < 4){ alert('Password must be at least 4 characters.'); return; }
+  if (username.toLowerCase() === getManagerUsername().toLowerCase()){
+    alert('❌ That username is reserved for the Store Manager.'); return;
+  }
+  const clash = viewOnlyUsers.find((u, i) => i !== idx && (u.username || '').toLowerCase() === username.toLowerCase());
+  if (clash){ alert('❌ Another user already has that username.'); return; }
+
+  user.name = name;
+  user.username = username;
+  user.password = password;
+  saveUsersToStorage();
+  closeViewerEditModal();
+  alert('✅ User updated.');
 }
-function openUserModal(){ renderUserList(); $('userModal').style.display = 'block'; $('newUserName').value = ''; }
+
+function openUserModal(){
+  if (!isManager()){ alert('Only the Store Manager can open User Management.'); return; }
+  renderUserList();
+  $('userModal').style.display = 'block';
+  $('newUserName').value = '';
+  $('newUserUsername').value = '';
+  $('newUserPassword').value = '';
+}
 function closeUserModal(){ $('userModal').style.display = 'none'; }
 
 /* =========================================================
@@ -1814,7 +2238,7 @@ function changePassword(e){
   setAppPassword(newPw);
   closePasswordModal();
   updateDefaultPasswordWarning();
-  alert('✅ Password updated successfully.\n\nPlease use the new password the next time you log in. If cloud sync is active, all devices will receive the new password automatically.');
+  alert('✅ Password updated successfully.\n\nPlease use the new password the next time you log in as the Store Manager. If cloud sync is active, all devices will receive the new password automatically.');
 }
 
 /* =========================================================
@@ -2048,21 +2472,31 @@ const TAB_MAP = {
   dashboard:'dashboardTab', inventory:'inventoryTab', issued:'issuedTab',
   receipts:'receiptsTab', valves:'valvesTab', analytics:'analyticsTab', data:'dataTab'
 };
+
 function switchTab(tab){
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-  Object.values(TAB_MAP).forEach(id => { const el = $(id); if (el) el.style.display = 'none'; });
-  const target = $(TAB_MAP[tab]);
-  if (target) target.style.display = 'block';
+  // ----- Data tab security gate (PIN required EVERY time) -----
+  if (tab === 'data'){
+    if (isViewer()){
+      alert('Access denied.\n\nOnly the Store Manager can open the Data section.');
+      return;
+    }
+    // Always prompt for the Data Section PIN
+    pendingDataTab = 'data';
+    $('dataLockPassword').value = '';
+    $('dataLockError').textContent = '';
+    // Refresh the hint
+    const hint = $('dataLockHint');
+    if (hint){
+      hint.innerHTML = isDefaultDataPin()
+        ? '<i class="fas fa-info-circle"></i> Default Data Section PIN: <strong>data123</strong> — change it from the Data section after unlocking.'
+        : '<i class="fas fa-info-circle"></i> Enter the Data Section PIN set by the Store Manager to unlock.';
+    }
+    $('dataLockModal').style.display = 'block';
+    setTimeout(() => $('dataLockPassword').focus(), 100);
+    return;
+  }
 
-  if (tab === 'dashboard') updateDashboard();
-  else if (tab === 'inventory'){ populateMachineFilter(); updateTable(); }
-  else if (tab === 'issued'){ refreshMaterialCombos(); updateIssuedTable(); }
-  else if (tab === 'receipts'){ refreshMaterialCombos(); updateReceiptsTable(); }
-  else if (tab === 'valves'){ refreshMaterialCombos(); updateValveDashboard(); }
-  else if (tab === 'analytics') updateAnalytics();
-  else if (tab === 'data') renderDataTab();
-
-  window.scrollTo({ top:0, behavior:'smooth' });
+  openTabNow(tab);
 }
 
 /* =========================================================
@@ -2945,9 +3379,11 @@ function renderDataTab(){
     <span class="chip green"><i class="fas fa-hand-holding"></i> ${issuedRecords.length} issue records</span>
     <span class="chip amber"><i class="fas fa-dolly"></i> ${receiptRecords.length} receipt records</span>
     <span class="chip"><i class="fas fa-faucet"></i> ${storeData.filter(isValveItem).length} valve items</span>
+    <span class="chip"><i class="fas fa-users"></i> ${viewOnlyUsers.length} view-only users</span>
     <span class="chip"><i class="fas fa-hdd"></i> ${kb} KB stored locally</span>
   `;
   updateCloudStatus(cloudEnabled ? (cloudConnectedOnce ? 'online' : 'connecting') : 'offline');
+  updateDataPinStatusChip();
 }
 
 function triggerUpload(){
@@ -3046,13 +3482,17 @@ function restoreJSON(e){
       storeData = obj.storeData;
       issuedRecords = Array.isArray(obj.issuedRecords) ? obj.issuedRecords : [];
       receiptRecords = Array.isArray(obj.receiptRecords) ? obj.receiptRecords : [];
-      if (Array.isArray(obj.viewOnlyUsers)){ viewOnlyUsers = obj.viewOnlyUsers; saveUsersToStorage(); }
+      if (Array.isArray(obj.viewOnlyUsers)){
+        viewOnlyUsers = obj.viewOnlyUsers;
+        localStorage.setItem('haldiaViewOnlyUsers', JSON.stringify(viewOnlyUsers));
+      }
       persistData();
       refreshMaterialCombos();
       updateDashboard();
       updateIssuedTable();
       updateReceiptsTable();
       updateValveDashboard();
+      renderUserList();
       renderDataTab();
       alert('✅ Backup restored successfully.');
     } catch(err){
@@ -3178,7 +3618,6 @@ function deleteAllData(e){
     localStorage.removeItem('haldiaStoreData');
     localStorage.removeItem('haldiaIssuedData');
     localStorage.removeItem('haldiaReceiptData');
-    // Push the wiped state up to the cloud so every device reflects the change
     if (cloudEnabled) pushAllToCloud();
     closeDeleteModal();
     refreshMaterialCombos();
@@ -3198,7 +3637,6 @@ function persistData(){
   localStorage.setItem('haldiaStoreData', JSON.stringify(storeData));
   localStorage.setItem('haldiaIssuedData', JSON.stringify(issuedRecords));
   localStorage.setItem('haldiaReceiptData', JSON.stringify(receiptRecords));
-  // Mirror to cloud if connected
   if (cloudEnabled){
     pushAllToCloud();
   }
@@ -3216,29 +3654,51 @@ function saveToLocalStorage(){
    INITIALISE
    ========================================================= */
 (async function init(){
-  // restore current user
+  // Restore session user
   const savedUser = sessionStorage.getItem('haldiaCurrentUser');
   if (savedUser){
     try {
       const user = JSON.parse(savedUser);
-      if (user.role === 'viewer' && viewOnlyUsers.find(u => u.name === user.name)) currentUser = user;
-      else currentUser = { name:'Store Manager', role:'manager' };
-    } catch(e){ currentUser = { name:'Store Manager', role:'manager' }; }
+      if (user && user.role === 'viewer'){
+        if (viewOnlyUsers.find(u => u.username === user.username)){
+          currentUser = user;
+        } else {
+          sessionStorage.removeItem(LOGIN_FLAG_KEY);
+          sessionStorage.removeItem('haldiaCurrentUser');
+          currentUser = { name:'Store Manager', role:'manager', username: getManagerUsername() };
+        }
+      } else {
+        currentUser = { name:'Store Manager', role:'manager', username: getManagerUsername() };
+      }
+    } catch(e){
+      currentUser = { name:'Store Manager', role:'manager', username: getManagerUsername() };
+    }
   }
   sessionStorage.setItem('haldiaCurrentUser', JSON.stringify(currentUser));
 
-  // *** 1) Try to connect to the cloud FIRST so passwords/data are up to date ***
+  // Cloud connect first
   const ok = initCloud();
   if (ok){
-    await initialCloudPull();     // may overwrite local data & passwords
+    await initialCloudPull();
     attachCloudListeners();
     updateCloudStatus('online');
   } else {
     updateCloudStatus('offline');
   }
 
-  // *** 2) Then wire up the UI ***
-  $('userRoleBadge').onclick = function(){ if (isViewer()) requestManagerSwitch(); };
+  // Re-validate viewer after cloud pull
+  if (currentUser && currentUser.role === 'viewer'){
+    if (!viewOnlyUsers.find(u => u.username === currentUser.username)){
+      sessionStorage.removeItem(LOGIN_FLAG_KEY);
+      sessionStorage.removeItem('haldiaCurrentUser');
+      currentUser = { name:'Store Manager', role:'manager', username: getManagerUsername() };
+    }
+  }
+
+  // Wire up UI
+  $('userRoleBadge').onclick = function(){
+    if (isViewer()) alert('You are logged in as a View-Only user.\n\nOnly the Store Manager can modify data.');
+  };
 
   initCombos();
   populateMachineFilter();
@@ -3249,11 +3709,9 @@ function saveToLocalStorage(){
   updateValveDashboard();
   renderUserList();
   renderDataTab();
+  updateDataPinStatusChip();
 
   if (isLoggedIn()) hideLogin(); else showLogin();
-
-  // push latest local view (in case we just pulled) — only if cloud has nothing
-  // (handled inside initialCloudPull)
 })();
 </script>
 </body>
