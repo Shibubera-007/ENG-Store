@@ -14,65 +14,25 @@
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Roboto, sans-serif; }
     body { background:#f0f4f8; padding-bottom:90px; color:#1e293b; }
-
-    /* ============ HEADER ============ */
-    .app-header {
-      background:linear-gradient(135deg, #003153, #2d6a4f);
-      color:white; padding:15px 20px; position:sticky; top:0; z-index:100;
-      box-shadow:0 4px 12px rgba(0,0,0,0.2);
-      display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
-    }
+    .app-header { background:linear-gradient(135deg, #003153, #2d6a4f); color:white; padding:15px 20px; position:sticky; top:0; z-index:100; box-shadow:0 4px 12px rgba(0,0,0,0.2); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; }
     .header-left { display:flex; align-items:center; gap:15px; }
     .header-left .title-block { display:flex; flex-direction:column; }
     .header-left h1 { font-size:1.3rem; margin:0; line-height:1.2; }
     .header-left .signature { font-size:0.68rem; opacity:0.85; margin-top:2px; letter-spacing:0.3px; }
-
-    /* Logo wrapper — sized for the tall vertical BPCL logo */
-    .bpcl-logo {
-      height:70px; width:auto;
-      display:flex; align-items:center; justify-content:center;
-      background:white; border-radius:6px; padding:4px 8px;
-      flex-shrink:0;
-    }
-    .bpcl-logo img { height:100%; width:auto; max-width:100%; object-fit:contain; }
-
+    .bpcl-logo { height:50px; width:auto; display:flex; align-items:center; justify-content:center; background:white; border-radius:6px; padding:4px 10px; }
+    .bpcl-logo img { height:100%; width:auto; max-width:130px; object-fit:contain; }
     .header-right { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-    .hdr-btn {
-      background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.3);
-      padding:6px 14px; border-radius:20px; cursor:pointer; font-size:0.8rem;
-      display:flex; align-items:center; gap:6px; transition:all .2s;
-    }
+    .hdr-btn { background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.3); padding:6px 14px; border-radius:20px; cursor:pointer; font-size:0.8rem; display:flex; align-items:center; gap:6px; transition:all .2s; }
     .hdr-btn:hover { background:rgba(255,255,255,0.35); }
     .hdr-btn:disabled { opacity:0.45; cursor:not-allowed; }
     .hdr-btn.hidden { display:none !important; }
     .tab-bar { display:flex; gap:8px; overflow-x:auto; padding:8px 0; width:100%; margin-top:8px; border-top:1px solid rgba(255,255,255,0.15); }
-    .tab-btn {
-      background:rgba(255,255,255,0.15); color:white; border:none; padding:8px 18px;
-      border-radius:25px; cursor:pointer; white-space:nowrap; font-weight:500; font-size:0.85rem; transition:all 0.2s;
-      display:flex; align-items:center; gap:6px;
-    }
+    .tab-btn { background:rgba(255,255,255,0.15); color:white; border:none; padding:8px 18px; border-radius:25px; cursor:pointer; white-space:nowrap; font-weight:500; font-size:0.85rem; transition:all 0.2s; display:flex; align-items:center; gap:6px; }
     .tab-btn:hover { background:rgba(255,255,255,0.3); }
     .tab-btn.active { background:white; color:#003153; }
     .tab-btn.view-only { opacity:0.6; cursor:default; }
     .tab-btn.view-only.active { background:#e2e8f0; color:#64748b; }
-    .tab-btn.locked::after {
-      content:'\f023'; font-family:'Font Awesome 6 Free'; font-weight:900;
-      font-size:0.6rem; margin-left:4px; opacity:0.85;
-    }
-
-    /* ============ SYNC STATUS PILL ============ */
-    .sync-pill {
-      display:inline-flex; align-items:center; gap:6px; padding:4px 12px;
-      border-radius:20px; font-size:0.72rem; font-weight:600;
-      background:rgba(255,255,255,0.18); color:#fff; border:1px solid rgba(255,255,255,0.3);
-    }
-    .sync-pill .dot { width:8px; height:8px; border-radius:50%; background:#94a3b8; }
-    .sync-pill.online .dot { background:#22c55e; box-shadow:0 0 6px #22c55e; }
-    .sync-pill.offline .dot { background:#ef4444; }
-    .sync-pill.syncing .dot { background:#f59e0b; animation:pulse 1s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-
-    /* ============ LAYOUT ============ */
+    .tab-btn.locked::after { content:'\f023'; font-family:'Font Awesome 6 Free'; font-weight:900; font-size:0.6rem; margin-left:4px; opacity:0.85; }
     .container { max-width:1000px; margin:0 auto; padding:15px; }
     .section-title { font-size:0.85rem; font-weight:700; color:#003153; text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
     .kpi-scroll { display:flex; gap:10px; overflow-x:auto; padding:10px 0; margin-bottom:15px; }
@@ -86,7 +46,6 @@
     .k-red { border-left-color:#b91c1c; } .k-red .kpi-icon { background:#fee2e2; color:#991b1b; }
     .k-purple { border-left-color:#7c3aed; } .k-purple .kpi-icon { background:#ede9fe; color:#6d28d9; }
     .k-teal { border-left-color:#0b5e7c; } .k-teal .kpi-icon { background:#cffafe; color:#0e7490; }
-
     .filter-section { background:white; border-radius:15px; padding:15px; margin-bottom:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
     .filter-row { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; align-items:center; }
     .filter-select { flex:1 1 140px; min-width:130px; padding:10px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; font-size:0.88rem; outline:none; }
@@ -97,14 +56,12 @@
     .search-box input { border:none; background:transparent; width:100%; outline:none; font-size:0.92rem; }
     .clear-btn { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; padding:10px 16px; border-radius:10px; cursor:pointer; font-size:0.85rem; font-weight:600; display:flex; align-items:center; gap:6px; }
     .clear-btn:hover { background:#e2e8f0; }
-
     .visuals-grid { display:grid; gap:15px; margin-bottom:15px; }
     .visual-card { background:white; border-radius:15px; padding:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
     .visual-card h3 { font-size:0.95rem; margin-bottom:10px; color:#003153; display:flex; align-items:center; gap:8px; }
     .visual-card.wide { grid-column:1 / -1; }
     canvas { max-height:210px; }
     .visual-card.wide canvas { max-height:280px; }
-
     .table-container { background:white; border-radius:15px; padding:15px; box-shadow:0 2px 8px rgba(0,0,0,0.1); overflow-x:auto; margin-bottom:15px; }
     .tbl-title { font-size:0.95rem; color:#003153; margin-bottom:10px; }
     table { width:100%; border-collapse:collapse; font-size:0.8rem; min-width:760px; }
@@ -118,31 +75,16 @@
     .mini-btn.primary { background:#003153; }
     .mini-btn.success { background:#2d6a4f; }
     .muted { color:#94a3b8; font-size:0.7rem; }
-
-    /* ============ CHIPS / SUMMARY ============ */
     .filter-summary { display:flex; gap:8px; flex-wrap:wrap; margin-top:4px; }
     .chip { background:#eff6ff; color:#1e40af; padding:5px 12px; border-radius:20px; font-size:0.75rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; }
     .chip.green { background:#ecfdf5; color:#166534; }
     .chip.amber { background:#fffbeb; color:#92400e; }
     .chip.red { background:#fef2f2; color:#991b1b; }
-
-    /* ============ COMBO ============ */
     .combo-wrap { position:relative; width:100%; }
-    .combo-input {
-      width:100%; padding:10px 34px 10px 14px; border:1px solid #e2e8f0; border-radius:10px;
-      background:#f8fafc; font-size:0.9rem; outline:none; transition:all .2s;
-    }
+    .combo-input { width:100%; padding:10px 34px 10px 14px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; font-size:0.9rem; outline:none; transition:all .2s; }
     .combo-input:focus { border-color:#2d6a4f; background:#fff; box-shadow:0 0 0 3px rgba(45,106,79,.12); }
-    .combo-wrap::after {
-      content:'\f078'; font-family:'Font Awesome 6 Free'; font-weight:900;
-      position:absolute; right:12px; top:50%; transform:translateY(-50%);
-      color:#94a3b8; font-size:0.65rem; pointer-events:none;
-    }
-    .combo-list {
-      position:absolute; top:calc(100% + 4px); left:0; right:0; background:#fff;
-      border:1px solid #e2e8f0; border-radius:12px; box-shadow:0 14px 34px rgba(0,0,0,.18);
-      max-height:250px; overflow-y:auto; z-index:1200; display:none;
-    }
+    .combo-wrap::after { content:'\f078'; font-family:'Font Awesome 6 Free'; font-weight:900; position:absolute; right:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:0.65rem; pointer-events:none; }
+    .combo-list { position:absolute; top:calc(100% + 4px); left:0; right:0; background:#fff; border:1px solid #e2e8f0; border-radius:12px; box-shadow:0 14px 34px rgba(0,0,0,.18); max-height:250px; overflow-y:auto; z-index:1200; display:none; }
     .combo-list.open { display:block; }
     .combo-item { padding:9px 14px; cursor:pointer; font-size:0.86rem; border-bottom:1px solid #f1f5f9; display:flex; flex-direction:column; gap:2px; }
     .combo-item:last-child { border-bottom:none; }
@@ -156,8 +98,6 @@
     .combo-qty.low { background:#fef3c7; color:#92400e; }
     .combo-qty.out { background:#fee2e2; color:#991b1b; }
     .combo-qty.all { background:#e0e7ff; color:#3730a3; }
-
-    /* ============ BUTTONS ============ */
     .floating-btn { position:fixed; bottom:20px; right:20px; background:#003153; color:white; width:60px; height:60px; border-radius:50%; border:none; font-size:2rem; box-shadow:0 4px 12px rgba(0,0,0,0.3); cursor:pointer; z-index:1000; }
     .floating-btn.view-only-mode { background:#64748b; cursor:not-allowed; opacity:0.6; }
     .btn-primary { background:#003153; color:white; border:none; padding:12px 24px; border-radius:10px; cursor:pointer; font-weight:600; width:100%; margin-top:10px; }
@@ -180,8 +120,6 @@
     .mini-action-btn { border:none; padding:6px 11px; border-radius:6px; cursor:pointer; font-size:0.72rem; font-weight:700; color:#fff; }
     .mini-action-btn.edit { background:#1e40af; }
     .mini-action-btn.remove { background:#ef4444; }
-
-    /* ============ BADGES ============ */
     .badge { padding:4px 10px; border-radius:12px; font-size:0.68rem; font-weight:700; white-space:nowrap; }
     .badge-instock { background:#dcfce7; color:#166534; }
     .badge-low { background:#fef3c7; color:#92400e; }
@@ -193,8 +131,6 @@
     .user-badge.manager { background:#dbeafe; color:#1e40af; }
     .user-badge.viewer { background:#f3f4f6; color:#4b5563; }
     .issued-row { background:#fbfdff; }
-
-    /* ============ PANELS ============ */
     .panel-grid { display:grid; gap:15px; margin-bottom:15px; }
     .alert-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; background:#f8fafc; margin-bottom:8px; border-left:4px solid #f59e0b; }
     .alert-item.out { border-left-color:#b91c1c; background:#fef2f2; }
@@ -208,8 +144,6 @@
     .act-out { background:#fee2e2; color:#991b1b; }
     .empty-state { text-align:center; color:#94a3b8; font-size:0.85rem; padding:22px 10px; }
     .empty-state i { font-size:1.7rem; display:block; margin-bottom:8px; opacity:.5; }
-
-    /* ============ DATA TAB ============ */
     .data-grid { display:grid; gap:15px; }
     .data-card { background:white; border-radius:15px; padding:18px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
     .data-card h3 { font-size:1rem; color:#003153; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
@@ -217,12 +151,8 @@
     .data-actions { display:flex; gap:8px; flex-wrap:wrap; }
     .data-card.danger { border:2px solid #fee2e2; background:#fffafa; }
     .data-card.danger h3 { color:#b91c1c; }
-    .data-card.cloud { border:2px solid #dbeafe; background:#fbfdff; }
-    .data-card.cloud h3 { color:#1d4ed8; }
     .data-card.security { border:2px solid #fde68a; background:#fffef7; }
     .data-card.security h3 { color:#b45309; }
-
-    /* ============ MODALS ============ */
     .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:1001; padding:20px; overflow-y:auto; }
     .modal-content { background:white; border-radius:20px; padding:20px; max-height:90vh; overflow-y:auto; margin:30px auto; max-width:600px; }
     .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
@@ -237,13 +167,11 @@
     .view-only-banner { background:#fef3c7; color:#92400e; padding:8px 15px; border-radius:8px; margin-bottom:12px; display:flex; align-items:center; gap:10px; font-size:0.88rem; }
     .view-only-banner i { font-size:1.1rem; }
     .pw-warning { background:#fef3c7; color:#92400e; padding:8px 14px; border-radius:8px; margin-bottom:12px; font-size:0.82rem; display:flex; align-items:center; gap:8px; border:1px solid #fde68a; }
-
-    /* ============ LOGIN ============ */
     .login-overlay { position:fixed; inset:0; z-index:5000; background:linear-gradient(135deg,#003153,#2d6a4f); display:flex; align-items:center; justify-content:center; padding:20px; }
     .login-card { background:#fff; border-radius:20px; padding:28px 24px; width:100%; max-width:390px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.35); animation:loginPop 0.25s ease; }
     @keyframes loginPop { from { opacity:0; transform:translateY(12px);} to {opacity:1; transform:translateY(0);} }
     .login-card .login-logo { display:flex; justify-content:center; margin-bottom:16px; }
-    .login-card .login-logo .bpcl-logo { height:96px; padding:6px 12px; }
+    .login-card .login-logo .bpcl-logo { height:52px; padding:4px 10px; }
     .login-card h2 { color:#003153; font-size:1.12rem; margin-bottom:6px; line-height:1.3; }
     .login-card .subtitle { color:#64748b; font-size:0.82rem; margin-bottom:6px; }
     .login-card .signature-line { font-size:0.7rem; color:#94a3b8; margin-bottom:14px; letter-spacing:0.3px; }
@@ -261,43 +189,15 @@
     .login-footer code { background:#f1f5f9; padding:1px 6px; border-radius:5px; color:#003153; font-weight:700; }
     .shake { animation:shake 0.35s; }
     @keyframes shake { 0%,100%{transform:translateX(0);} 20%{transform:translateX(-8px);} 40%{transform:translateX(8px);} 60%{transform:translateX(-5px);} 80%{transform:translateX(5px);} }
-
-    /* Admin auth shield strip */
-    .admin-shield-banner {
-      display:flex; align-items:center; gap:10px; padding:11px 14px;
-      background:linear-gradient(135deg,#fffbeb,#fef3c7);
-      border:1px solid #fde68a; border-left:5px solid #b45309;
-      border-radius:10px; margin-bottom:16px;
-    }
+    .admin-shield-banner { display:flex; align-items:center; gap:10px; padding:11px 14px; background:linear-gradient(135deg,#fffbeb,#fef3c7); border:1px solid #fde68a; border-left:5px solid #b45309; border-radius:10px; margin-bottom:16px; }
     .admin-shield-banner i { color:#b45309; font-size:1.15rem; }
     .admin-shield-banner span { font-size:0.85rem; color:#78350f; line-height:1.45; }
-
-    /* Cloud modal helpers */
-    .cloud-steps { margin-top:15px; padding:12px; background:#fffbeb; border:1px solid #fde68a; border-radius:10px; }
-    .cloud-steps p { color:#92400e; font-size:0.78rem; line-height:1.7; margin:0; }
-    .cloud-steps ol { margin:6px 0 0 18px; color:#78350f; font-size:0.78rem; line-height:1.7; }
-    .cloud-steps code { background:#fef3c7; padding:1px 5px; border-radius:4px; font-weight:700; }
-    .cloud-info-banner {
-      display:flex; align-items:center; gap:10px; padding:11px 14px;
-      background:linear-gradient(135deg,#eff6ff,#dbeafe);
-      border:1px solid #bfdbfe; border-left:5px solid #1d4ed8;
-      border-radius:10px; margin-bottom:16px;
-    }
-    .cloud-info-banner i { color:#1d4ed8; font-size:1.15rem; }
-    .cloud-info-banner span { font-size:0.85rem; color:#1e3a8a; line-height:1.5; }
-
-    /* User list rows */
-    .user-row {
-      display:flex; justify-content:space-between; align-items:center;
-      padding:10px 12px; background:#f8fafc; border-radius:10px; margin-bottom:8px;
-      border-left:4px solid #64748b; gap:10px;
-    }
+    .user-row { display:flex; justify-content:space-between; align-items:center; padding:10px 12px; background:#f8fafc; border-radius:10px; margin-bottom:8px; border-left:4px solid #64748b; gap:10px; }
     .user-row .ur-info { flex:1; min-width:0; }
     .user-row .ur-name { font-weight:700; color:#1e293b; font-size:0.88rem; }
     .user-row .ur-meta { font-size:0.72rem; color:#64748b; margin-top:3px; line-height:1.5; word-break:break-all; }
     .user-row .ur-meta code { background:#e2e8f0; padding:1px 6px; border-radius:4px; color:#0f172a; font-weight:600; }
     .user-row .ur-actions { display:flex; gap:6px; flex-shrink:0; }
-
     @media (min-width:768px) {
       .visuals-grid { grid-template-columns:repeat(2,1fr); }
       .panel-grid { grid-template-columns:repeat(2,1fr); }
@@ -305,11 +205,10 @@
     }
     @media (max-width:600px) {
       .app-header { padding:10px 12px; }
-      .header-left { gap:10px; }
       .header-left h1 { font-size:0.85rem; }
       .header-left .signature { font-size:0.6rem; }
-      .bpcl-logo { height:52px; padding:3px 6px; }
-      .login-card .login-logo .bpcl-logo { height:78px; padding:4px 10px; }
+      .bpcl-logo { height:38px; padding:3px 6px; }
+      .bpcl-logo img { max-width:80px; }
       .tab-btn { padding:6px 12px; font-size:0.72rem; }
       .kpi-card { min-width:130px; }
       .modal-content { margin:10px auto; padding:16px; }
@@ -323,7 +222,7 @@
   <div class="login-card" id="loginCard">
     <div class="login-logo">
       <div class="bpcl-logo">
-        <img src="bpcl-logo.png" alt="BPCL Logo">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 80'%3E%3Crect width='240' height='80' fill='%23ffffff' rx='6'/%3E%3Ctext x='18' y='48' font-family='Arial, sans-serif' font-weight='bold' font-size='34' fill='%23e11d2a'%3EBharat%3C/text%3E%3Ctext x='140' y='48' font-family='Arial, sans-serif' font-weight='bold' font-size='28' fill='%23003153'%3EPetroleum%3C/text%3E%3Ccircle cx='212' cy='40' r='18' fill='%23e11d2a'/%3E%3Ctext x='204' y='46' font-family='Arial, sans-serif' font-weight='bold' font-size='16' fill='%23ffffff'%3ELPG%3C/text%3E%3C/svg%3E" alt="Bharat Petroleum Logo">
       </div>
     </div>
     <h2><i class="fas fa-lock"></i> ENGINEERING STORE MATERIALS MANAGEMENT SYSTEM</h2>
@@ -344,9 +243,6 @@
     </div>
 
     <div class="login-error" id="loginError"></div>
-    <div class="sync-pill" id="loginSyncPill" style="background:#f1f5f9;color:#475569;border-color:#e2e8f0;margin-bottom:10px;">
-      <span class="dot"></span> <span id="loginSyncText">Checking cloud…</span>
-    </div>
     <button class="login-btn" id="loginBtn" onclick="attemptLogin()">
       <i class="fas fa-sign-in-alt"></i> Login
     </button>
@@ -361,8 +257,8 @@
 <div class="app-header">
   <div class="header-left">
     <div class="bpcl-logo">
-      <img src="bpcl-logo.png" alt="BPCL Logo"
-           title="Bharat Petroleum Corporation Limited">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 80'%3E%3Crect width='240' height='80' fill='%23ffffff' rx='6'/%3E%3Ctext x='18' y='48' font-family='Arial, sans-serif' font-weight='bold' font-size='34' fill='%23e11d2a'%3EBharat%3C/text%3E%3Ctext x='140' y='48' font-family='Arial, sans-serif' font-weight='bold' font-size='28' fill='%23003153'%3EPetroleum%3C/text%3E%3Ccircle cx='212' cy='40' r='18' fill='%23e11d2a'/%3E%3Ctext x='204' y='46' font-family='Arial, sans-serif' font-weight='bold' font-size='16' fill='%23ffffff'%3ELPG%3C/text%3E%3C/svg%3E"
+           alt="Bharat Petroleum Logo" title="Bharat Petroleum Corporation Limited">
     </div>
     <div class="title-block">
       <h1><i class="fas fa-gas-pump"></i> ENGINEERING STORE MATERIALS MANAGEMENT SYSTEM</h1>
@@ -370,11 +266,7 @@
     </div>
   </div>
   <div class="header-right">
-    <span class="sync-pill" id="syncPill" title="Cloud sync status">
-      <span class="dot"></span> <span id="syncPillText">Offline</span>
-    </span>
     <span id="userRoleBadge" class="user-badge manager"><i class="fas fa-user-shield"></i> Store Manager</span>
-    <button class="hdr-btn" onclick="openCloudModal()"><i class="fas fa-cloud"></i> Cloud Sync</button>
     <button class="hdr-btn" id="adminPinBtn" onclick="openAdminPinModal()"><i class="fas fa-shield-alt"></i> Edit PIN</button>
     <button class="hdr-btn" id="usersBtn" onclick="openUserModal()"><i class="fas fa-users"></i> Users</button>
     <button class="hdr-btn" id="passwordBtn" onclick="openPasswordModal()"><i class="fas fa-key"></i> Password</button>
@@ -400,9 +292,7 @@
     <i class="fas fa-exclamation-triangle"></i>
     <span><strong>Security notice:</strong> You are still using the default password. Please change it from the <strong>Password</strong> button in the header.</span>
   </div>
-
   <div class="kpi-scroll" id="kpiContainer"></div>
-
   <div class="filter-section">
     <div class="section-title"><i class="fas fa-sliders-h"></i> Live Filters</div>
     <div class="filter-row">
@@ -419,7 +309,6 @@
     </div>
     <div class="filter-summary" id="dashSummary"></div>
   </div>
-
   <div class="visuals-grid">
     <div class="visual-card wide">
       <h3><i class="fas fa-layer-group"></i> Real-Time Stock by Material</h3>
@@ -429,7 +318,6 @@
     <div class="visual-card"><h3><i class="fas fa-chart-pie"></i> Status Distribution</h3><canvas id="chart2"></canvas></div>
     <div class="visual-card wide"><h3><i class="fas fa-chart-line"></i> Lead Time vs Reorder Level</h3><canvas id="chart3"></canvas></div>
   </div>
-
   <div class="panel-grid">
     <div class="visual-card">
       <h3><i class="fas fa-exclamation-triangle"></i> Critical Stock Alerts</h3>
@@ -583,14 +471,11 @@
     </div>
     <div class="filter-summary" id="valveSummary"></div>
   </div>
-
   <div class="kpi-scroll" id="valveKpiContainer"></div>
-
   <div class="visuals-grid">
     <div class="visual-card"><h3><i class="fas fa-chart-bar"></i> Valve Stock by Type</h3><canvas id="chartValveStock"></canvas></div>
     <div class="visual-card"><h3><i class="fas fa-exchange-alt"></i> Issued vs Received (by material)</h3><canvas id="chartValveFlow"></canvas></div>
   </div>
-
   <div class="table-container">
     <h3 class="tbl-title"><i class="fas fa-list-ul"></i> Valve Stock Summary</h3>
     <table>
@@ -598,7 +483,6 @@
       <tbody id="valveStockBody"></tbody>
     </table>
   </div>
-
   <div class="table-container">
     <h3 class="tbl-title"><i class="fas fa-book"></i> Valve Transaction Ledger (Date-wise)</h3>
     <table>
@@ -622,14 +506,11 @@
   <div id="viewOnlyBannerData" class="view-only-banner" style="display:none;">
     <i class="fas fa-eye"></i> <span><strong>View-Only Mode:</strong> Import, save and delete operations are disabled for you. Exports are still available.</span>
   </div>
-
   <div class="filter-section">
     <div class="section-title"><i class="fas fa-database"></i> Data Overview</div>
     <div class="filter-summary" id="dataStats"></div>
   </div>
-
   <div class="data-grid">
-    <!-- ===== SECURITY CARD: Data Section PIN ===== -->
     <div class="data-card security" style="grid-column:1/-1;">
       <h3><i class="fas fa-lock"></i> Data Section Security PIN</h3>
       <p>This PIN protects the Data section. It is required <strong>every time</strong> the Data tab is opened — keeping unknown persons away from import, backup, restore and delete controls. It is separate from your login password and your edit PIN.</p>
@@ -646,18 +527,6 @@
         <span class="chip"><i class="fas fa-clock"></i> Re-locks every time the Data tab is opened</span>
       </div>
     </div>
-
-    <div class="data-card cloud" style="grid-column:1/-1;">
-      <h3><i class="fas fa-cloud"></i> Cloud Sync (Real-Time Across Devices)</h3>
-      <p>Connect this app to a free Firebase Realtime Database so that <strong>every entry you make here appears instantly on every other device</strong> that logs in with the same Store Key. Perfect for GitHub Pages hosting.</p>
-      <div class="data-actions">
-        <button class="save-btn" onclick="openCloudModal()" style="background:#1d4ed8;"><i class="fas fa-cog"></i> <span id="cloudBtnLabel">Setup Cloud Sync</span></button>
-        <button class="export-btn" onclick="forceCloudSync()"><i class="fas fa-sync-alt"></i> Sync Now</button>
-        <button class="delete-all-btn" id="cloudDisconnectBtn" onclick="disconnectCloud(true)"><i class="fas fa-unlink"></i> Disconnect</button>
-      </div>
-      <div class="filter-summary" id="cloudStatusChips" style="margin-top:12px;"></div>
-    </div>
-
     <div class="data-card">
       <h3><i class="fas fa-file-import"></i> Import Inventory</h3>
       <p>Upload an Excel / CSV file to <strong>replace</strong> the current inventory list. Required columns: Spare Name, Available, Reorder Level, Machine/Unit, Maker.</p>
@@ -667,7 +536,6 @@
         <button class="export-btn" onclick="downloadTemplate()"><i class="fas fa-download"></i> Download Template</button>
       </div>
     </div>
-
     <div class="data-card">
       <h3><i class="fas fa-save"></i> Save &amp; Backup</h3>
       <p>Save the current data to this device's local storage, or download a full JSON backup that can be restored later on any device.</p>
@@ -678,7 +546,6 @@
         <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="restoreJSON(event)">
       </div>
     </div>
-
     <div class="data-card">
       <h3><i class="fas fa-file-export"></i> Export Reports</h3>
       <p>Generate printable / shareable reports for inventory, issued materials and received materials.</p>
@@ -691,7 +558,6 @@
         <button class="export-btn" onclick="exportReceiptsExcel()"><i class="fas fa-file-excel"></i> Receipts Excel</button>
       </div>
     </div>
-
     <div class="data-card">
       <h3><i class="fas fa-share-alt"></i> Share</h3>
       <p>Share the inventory report with your team using the device share sheet, or export a copy to send manually.</p>
@@ -700,10 +566,9 @@
         <button class="export-btn" onclick="openShareModal()"><i class="fas fa-window-restore"></i> Share Options</button>
       </div>
     </div>
-
     <div class="data-card danger" style="grid-column:1/-1;">
       <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
-      <p>Permanently delete all inventory data, issued records and receipt records. This action requires your login password and cannot be undone. If cloud sync is on, the deletion will also apply to all other devices.</p>
+      <p>Permanently delete all inventory data, issued records and receipt records. This action requires your login password and cannot be undone. If cloud sync is active, the deletion will also apply to all other devices.</p>
       <div class="data-actions">
         <button class="delete-all-btn" id="deleteAllBtn" onclick="openDeleteModal()"><i class="fas fa-trash-alt"></i> Delete All Data</button>
       </div>
@@ -901,7 +766,6 @@
     <p style="color:#64748b; margin-bottom:15px; font-size:0.88rem; line-height:1.55;">
       Create up to <strong>5 view-only users</strong>. Each user gets their own <strong>username &amp; password</strong> and can log in on any device to see the site in view-only mode — no data entry, no edits, no Data tab.
     </p>
-
     <div style="margin-bottom:15px; padding:12px; background:#dbeafe; border-radius:10px; border-left:5px solid #1d4ed8;">
       <strong style="color:#1e40af; font-size:0.88rem;"><i class="fas fa-user-shield"></i> Store Manager Account (full access)</strong>
       <div style="font-size:0.78rem; color:#1e3a8a; margin-top:6px; line-height:1.6;">
@@ -911,13 +775,10 @@
         &nbsp;(change via the <strong>Password</strong> button)
       </div>
     </div>
-
     <div class="section-title" style="margin-bottom:8px;"><i class="fas fa-user-friends"></i> View-Only Users</div>
     <div id="userListContainer"></div>
-
     <div style="margin-top:15px; border-top:1px solid #e2e8f0; padding-top:15px;">
       <div class="section-title" style="margin-bottom:10px;"><i class="fas fa-user-plus"></i> Add New View-Only User</div>
-
       <div class="form-group">
         <label>Full Name *</label>
         <input type="text" id="newUserName" placeholder="e.g. Ramesh Kumar" style="padding:10px;">
@@ -938,11 +799,9 @@
       <button onclick="addViewerUser()" class="btn-primary" style="margin-top:4px;">
         <i class="fas fa-user-plus"></i> Create View-Only User
       </button>
-
       <p style="font-size:0.78rem; color:#64748b; margin-top:12px; line-height:1.55;">
-        <i class="fas fa-info-circle"></i> These users can log in on any computer / phone using the credentials you set here. If cloud sync is active, the accounts sync automatically to every device.
+        <i class="fas fa-info-circle"></i> These users can log in on any computer / phone using the credentials you set here. Accounts sync automatically to every device.
       </p>
-
       <button onclick="openPasswordModal()" class="btn-primary" style="background:#1e3a5f; margin-top:14px;">
         <i class="fas fa-key"></i> Change Store Manager Password
       </button>
@@ -996,7 +855,7 @@
     </div>
     <p style="color:#64748b; margin-bottom:15px; font-size:0.88rem;">
       This password is required to open the app as <strong>admin</strong>, and also to confirm the <strong>Delete All</strong> action.
-      When cloud sync is on, the new password is applied to every connected device.
+      The new password is applied to every connected device automatically.
     </p>
     <form id="passwordForm" onsubmit="changePassword(event)">
       <div class="form-group">
@@ -1115,71 +974,24 @@
   </div>
 </div>
 
-<!-- ================= CLOUD SYNC SETUP MODAL ================= -->
-<div class="modal" id="cloudModal">
-  <div class="modal-content" style="max-width:640px;">
-    <div class="modal-header">
-      <h2><i class="fas fa-cloud"></i> Cloud Sync Setup</h2>
-      <button class="close-btn" onclick="closeCloudModal()">×</button>
-    </div>
-
-    <div class="cloud-info-banner">
-      <i class="fas fa-broadcast-tower"></i>
-      <span>Connect this app to a <strong>free Firebase Realtime Database</strong>. Once connected, any data you add, issue or receive on this device will appear <strong>instantly on every other device</strong> that logs in with the same Store Key. User accounts and security PINs are synced too.</span>
-    </div>
-
-    <form id="cloudForm" onsubmit="saveCloudConfig(event)">
-      <div class="form-group">
-        <label>Firebase Config (JSON) *</label>
-        <textarea id="cloudConfigJson" rows="8" required placeholder='{
-  "apiKey": "AIza...",
-  "authDomain": "your-project.firebaseapp.com",
-  "databaseURL": "https://your-project-default-rtdb.firebaseio.com",
-  "projectId": "your-project",
-  "storageBucket": "your-project.appspot.com",
-  "messagingSenderId": "1234567890",
-  "appId": "1:1234567890:web:abcdef"
-}' style="font-family:monospace;font-size:0.78rem;line-height:1.4;"></textarea>
-        <small style="color:#64748b;font-size:0.75rem;display:block;margin-top:5px;">
-          Paste the config object exactly as Firebase gives it (including the <code>databaseURL</code> line).
-        </small>
-      </div>
-      <div class="form-group">
-        <label>Store Key (shared secret) *</label>
-        <input type="text" id="cloudStoreKey" required placeholder="e.g. bpcl-haldia-store-2024"
-               style="font-family:monospace;">
-        <small style="color:#64748b;font-size:0.75rem;display:block;margin-top:5px;">
-          All devices must use the <strong>same Store Key</strong> to see the same data. Treat it like a password — pick something unique and hard to guess.
-        </small>
-      </div>
-
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button type="submit" class="btn-primary" style="background:#1d4ed8;flex:1;min-width:180px;">
-          <i class="fas fa-cloud-upload-alt"></i> Save &amp; Connect
-        </button>
-        <button type="button" class="btn-cancel" style="flex:1;min-width:180px;" onclick="disconnectCloud(true)">
-          <i class="fas fa-unlink"></i> Disconnect
-        </button>
-      </div>
-    </form>
-
-    <div class="cloud-steps">
-      <p><strong><i class="fas fa-list-ol"></i> How to create the free database (5 minutes):</strong></p>
-      <ol>
-        <li>Open <code>console.firebase.google.com</code> and sign in with any Google account.</li>
-        <li>Click <strong>Add project</strong> → give it a name → continue (Google Analytics can be disabled).</li>
-        <li>In the left menu choose <strong>Build → Realtime Database → Create Database</strong>.</li>
-        <li>Pick a region, then choose <strong>Start in test mode</strong> (allows read/write for 30 days — you can extend the rules later).</li>
-        <li>Go to <strong>Project Settings (⚙️) → General → Your apps → Web (&lt;/&gt;)</strong>, register an app and copy the <code>firebaseConfig</code> object.</li>
-        <li>Paste it above, type a unique <strong>Store Key</strong>, and click <strong>Save &amp; Connect</strong>.</li>
-        <li>Repeat steps 5–6 on every device — same config, same Store Key.</li>
-      </ol>
-      <p style="margin-top:8px;"><strong>🔒 Security tip:</strong> after testing, open the Realtime Database → <strong>Rules</strong> tab and restrict access to your Store Key path, e.g. <code>{"rules": {"engineering-store-XXXX": {".read": true, ".write": true}}}</code> — replacing the path with your actual Store Key.</p>
-    </div>
-  </div>
-</div>
-
 <script>
+/* =========================================================
+   HARD-CODED FIREBASE CLOUD CONFIG (auto-sync, hidden from UI)
+   ========================================================= */
+const HARDCODED_CLOUD_CONFIG = {
+  firebaseConfig: {
+    apiKey: "AIzaSyD5hkyKg-Z55zyMFvWC71lVvRZPs1uMcog",
+    authDomain: "shibu007-81bd8.firebaseapp.com",
+    databaseURL: "https://shibu007-81bd8-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "shibu007-81bd8",
+    storageBucket: "shibu007-81bd8.firebasestorage.app",
+    messagingSenderId: "872408344538",
+    appId: "1:872408344538:web:3798606748405224a502e3",
+    measurementId: "G-19SRERBR4C"
+  },
+  storeKey: "store-1gkseo5c"
+};
+
 /* =========================================================
    HELPERS
    ========================================================= */
@@ -1266,7 +1078,6 @@ function attemptLogin(){
   if (!username){ errEl.textContent = 'Please enter your username.'; userEl.focus(); return; }
   if (!pw){ errEl.textContent = 'Please enter your password.'; input.focus(); return; }
 
-  // ---- Store Manager check ----
   if (username.toLowerCase() === getManagerUsername().toLowerCase() && pw === getAppPassword()){
     failedAttempts = 0;
     sessionStorage.setItem(LOGIN_FLAG_KEY, 'true');
@@ -1281,7 +1092,6 @@ function attemptLogin(){
     return;
   }
 
-  // ---- View-only user check ----
   const viewer = viewOnlyUsers.find(u =>
     u && u.username && u.password &&
     u.username.toLowerCase() === username.toLowerCase() &&
@@ -1301,7 +1111,6 @@ function attemptLogin(){
     return;
   }
 
-  // ---- Failure ----
   failedAttempts++;
   errEl.textContent = 'Incorrect username or password. Please try again.';
   input.value = '';
@@ -1340,7 +1149,7 @@ function logout(){
   if (!confirm('Log out of the system?')) return;
   sessionStorage.removeItem(LOGIN_FLAG_KEY);
   closeUserModal(); closePasswordModal(); closeShareModal(); closeDeleteModal();
-  closeAdminAuthModal(); closeAdminPinSettings(); closeCloudModal();
+  closeAdminAuthModal(); closeAdminPinSettings();
   closeDataLockModal(); closeViewerEditModal(); closeDataPinSettings();
   showLogin();
 }
@@ -1460,7 +1269,6 @@ function updateDataPinStatusChip(){
   }
 }
 
-/* --- Data tab lock modal --- */
 let pendingDataTab = null;
 
 function closeDataLockModal(){
@@ -1491,7 +1299,6 @@ function unlockDataTab(e){
   openTabNow(target);
 }
 
-/* Opens a tab immediately (used after data PIN unlock) */
 function openTabNow(tab){
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   Object.values(TAB_MAP).forEach(id => { const el = $(id); if (el) el.style.display = 'none'; });
@@ -1509,18 +1316,15 @@ function openTabNow(tab){
   window.scrollTo({ top:0, behavior:'smooth' });
 }
 
-/* Manually re-lock the Data tab from within it */
 function lockDataNow(){
   const active = document.querySelector('.tab-btn.active');
   if (active && active.dataset.tab === 'data'){
-    // switch away to dashboard then return to trigger the lock
     openTabNow('dashboard');
     setTimeout(() => switchTab('data'), 150);
   }
   alert('🔒 Data tab locked.\n\nThe Data Section PIN will be required the next time you open it.');
 }
 
-/* --- Change Data PIN modal --- */
 function openDataPinSettings(){
   if (!isManager()){ alert('Only the Store Manager can change the Data PIN.'); return; }
   $('dataPinForm').reset();
@@ -1553,9 +1357,8 @@ function changeDataPin(e){
 }
 
 /* =========================================================
-   CLOUD SYNC
+   CLOUD SYNC  (fully automatic, hidden from UI)
    ========================================================= */
-const CLOUD_CONFIG_KEY = 'haldiaCloudConfig';
 let firebaseApp = null;
 let firebaseDb  = null;
 let cloudEnabled = false;
@@ -1563,14 +1366,8 @@ let cloudListener = null;
 let applyingRemote = false;
 let cloudConnectedOnce = false;
 
-function getCloudConfig(){
-  try { return JSON.parse(localStorage.getItem(CLOUD_CONFIG_KEY) || 'null'); }
-  catch(e){ return null; }
-}
-function setCloudConfig(cfg){
-  if (cfg) localStorage.setItem(CLOUD_CONFIG_KEY, JSON.stringify(cfg));
-  else localStorage.removeItem(CLOUD_CONFIG_KEY);
-}
+function getCloudConfig(){ return HARDCODED_CLOUD_CONFIG; }
+function setCloudConfig(){ /* no-op: config is hard-coded */ }
 function getCloudRoot(){
   const cfg = getCloudConfig();
   if (!cfg || !cfg.storeKey) return null;
@@ -1592,79 +1389,22 @@ function initCloud(){
     return true;
   } catch(e){
     console.error('Firebase init error:', e);
-    alert('Cloud connection failed: ' + e.message + '\n\nFalling back to offline (device-only) mode.');
     cloudEnabled = false;
     return false;
   }
 }
 
-function updateCloudStatus(state, message){
-  const pill = $('syncPill');
-  const pillText = $('syncPillText');
-  const loginPill = $('loginSyncPill');
-  const loginText = $('loginSyncText');
-
-  const label = message || ({
-    online: 'Cloud synced',
-    syncing: 'Syncing…',
-    offline: 'Offline (device only)',
-    error: 'Cloud error',
-    connecting: 'Connecting…'
-  }[state] || state);
-
-  if (pill && pillText){
-    pill.classList.remove('online','offline','syncing');
-    if (state === 'online') pill.classList.add('online');
-    else if (state === 'offline' || state === 'error') pill.classList.add('offline');
-    else if (state === 'syncing' || state === 'connecting') pill.classList.add('syncing');
-    pillText.textContent = label;
-  }
-  if (loginPill && loginText){
-    loginPill.classList.remove('online','offline','syncing');
-    if (state === 'online') loginPill.classList.add('online');
-    else if (state === 'offline' || state === 'error') loginPill.classList.add('offline');
-    else if (state === 'syncing' || state === 'connecting') loginPill.classList.add('syncing');
-    loginText.textContent = label;
-  }
-  const chips = $('cloudStatusChips');
-  if (chips){
-    const cfg = getCloudConfig();
-    if (cloudEnabled && cfg){
-      chips.innerHTML = `
-        <span class="chip green"><i class="fas fa-check-circle"></i> Connected</span>
-        <span class="chip"><i class="fas fa-key"></i> Store Key: <strong>${esc(cfg.storeKey)}</strong></span>
-        <span class="chip"><i class="fas fa-cloud"></i> ${esc(cfg.firebaseConfig.projectId || 'Firebase')}</span>
-        <span class="chip amber"><i class="fas fa-sync"></i> ${esc(label)}</span>
-      `;
-    } else {
-      chips.innerHTML = `
-        <span class="chip red"><i class="fas fa-unlink"></i> Not connected</span>
-        <span class="chip amber"><i class="fas fa-info-circle"></i> Data is stored only on this device</span>
-      `;
-    }
-  }
-  const btnLabel = $('cloudBtnLabel');
-  if (btnLabel) btnLabel.textContent = cloudEnabled ? 'Cloud Settings' : 'Setup Cloud Sync';
-  const disc = $('cloudDisconnectBtn');
-  if (disc) disc.style.display = cloudEnabled ? 'inline-flex' : 'none';
-}
+function updateCloudStatus(){ /* silent — no visible UI */ }
 
 function pushPartialToCloud(partial){
   if (!cloudEnabled || !firebaseDb) return;
   const root = getCloudRoot();
   if (!root) return;
   applyingRemote = true;
-  updateCloudStatus('syncing');
   const payload = Object.assign({}, partial, { updatedAt: Date.now(), updatedBy: (currentUser && currentUser.name) || 'unknown' });
   firebaseDb.ref(root).update(payload)
-    .then(() => { updateCloudStatus('online'); })
-    .catch(err => {
-      console.error('Cloud write error:', err);
-      updateCloudStatus('error', 'Write failed');
-    })
-    .finally(() => {
-      setTimeout(() => { applyingRemote = false; }, 350);
-    });
+    .catch(err => console.error('Cloud write error:', err))
+    .finally(() => { setTimeout(() => { applyingRemote = false; }, 350); });
 }
 
 function pushAllToCloud(){
@@ -1672,7 +1412,6 @@ function pushAllToCloud(){
   const root = getCloudRoot();
   if (!root) return;
   applyingRemote = true;
-  updateCloudStatus('syncing');
   firebaseDb.ref(root).set({
     storeData: storeData,
     issuedRecords: issuedRecords,
@@ -1685,14 +1424,8 @@ function pushAllToCloud(){
     updatedAt: Date.now(),
     updatedBy: (currentUser && currentUser.name) || 'unknown'
   })
-  .then(() => { updateCloudStatus('online'); })
-  .catch(err => {
-    console.error('Cloud full-write error:', err);
-    updateCloudStatus('error', 'Write failed');
-  })
-  .finally(() => {
-    setTimeout(() => { applyingRemote = false; }, 350);
-  });
+  .catch(err => console.error('Cloud full-write error:', err))
+  .finally(() => { setTimeout(() => { applyingRemote = false; }, 350); });
 }
 
 function applyRemoteData(v){
@@ -1757,7 +1490,6 @@ function initialCloudPull(){
     if (!cloudEnabled || !firebaseDb) { resolve(false); return; }
     const root = getCloudRoot();
     if (!root) { resolve(false); return; }
-    updateCloudStatus('connecting');
 
     firebaseDb.ref(root).once('value')
       .then(snap => {
@@ -1778,12 +1510,10 @@ function initialCloudPull(){
           pushAllToCloud();
         }
         cloudConnectedOnce = true;
-        updateCloudStatus('online');
         resolve(true);
       })
       .catch(err => {
         console.error('Initial cloud pull failed:', err);
-        updateCloudStatus('error', 'Connection failed');
         cloudEnabled = false;
         resolve(false);
       });
@@ -1806,99 +1536,9 @@ function attachCloudListeners(){
     const v = snap.val();
     if (!v) return;
     applyRemoteData(v);
-    updateCloudStatus('online');
   }, err => {
     console.error('Cloud listener error:', err);
-    updateCloudStatus('error', 'Listener error');
   });
-}
-
-function detachCloudListeners(){
-  if (cloudListener){
-    try { cloudListener.off(); } catch(e){}
-    cloudListener = null;
-  }
-}
-
-function openCloudModal(){
-  const cfg = getCloudConfig();
-  if (cfg){
-    if (cfg.firebaseConfig) $('cloudConfigJson').value = JSON.stringify(cfg.firebaseConfig, null, 2);
-    if (cfg.storeKey) $('cloudStoreKey').value = cfg.storeKey;
-  } else {
-    $('cloudForm').reset();
-    $('cloudStoreKey').value = 'store-' + Math.random().toString(36).slice(2, 10);
-  }
-  $('cloudModal').style.display = 'block';
-}
-function closeCloudModal(){ $('cloudModal').style.display = 'none'; }
-
-function saveCloudConfig(e){
-  e.preventDefault();
-  if (!isManager()){ alert('Only the Store Manager can change cloud settings.'); return; }
-
-  const raw = $('cloudConfigJson').value.trim();
-  const storeKey = $('cloudStoreKey').value.trim();
-  if (!raw){ alert('Please paste the Firebase config JSON.'); return; }
-  if (!storeKey){ alert('Please enter a Store Key.'); return; }
-
-  let parsed;
-  try {
-    let clean = raw.replace(/^[\s\S]*?=\s*/, '').replace(/;\s*$/, '').trim();
-    if (!clean.startsWith('{')) clean = raw;
-    parsed = JSON.parse(clean);
-  } catch(err){
-    alert('❌ Could not parse the JSON. Please copy the whole firebaseConfig object exactly as Firebase gives it.');
-    return;
-  }
-
-  if (!parsed.apiKey || !parsed.databaseURL){
-    alert('❌ The config must contain at least "apiKey" and "databaseURL".\n\nMake sure you copied the whole firebaseConfig object (including databaseURL).');
-    return;
-  }
-
-  setCloudConfig({ firebaseConfig: parsed, storeKey });
-
-  detachCloudListeners();
-  cloudEnabled = false;
-  firebaseDb = null;
-  firebaseApp = null;
-
-  const ok = initCloud();
-  if (!ok){
-    alert('❌ Could not connect. Please double-check the config and that the Realtime Database is created.');
-    return;
-  }
-
-  closeCloudModal();
-
-  initialCloudPull().then(() => {
-    attachCloudListeners();
-    updateCloudStatus(cloudEnabled ? 'online' : 'offline');
-    renderDataTab();
-    alert('✅ Cloud sync connected.\n\nAll data — including user accounts and security PINs — will now be shared in real time with every device using Store Key "' + storeKey + '".');
-  });
-}
-
-function disconnectCloud(silent){
-  if (!confirm('Disconnect cloud sync?\n\nThis device will stop syncing with other devices. Local data will remain on this device only.')) return;
-  detachCloudListeners();
-  cloudEnabled = false;
-  firebaseDb = null;
-  firebaseApp = null;
-  setCloudConfig(null);
-  updateCloudStatus('offline');
-  renderDataTab();
-  if (!silent) alert('✅ Cloud sync disconnected. This device is now in offline (device-only) mode.');
-}
-
-function forceCloudSync(){
-  if (!cloudEnabled){
-    alert('Cloud sync is not connected. Open "Cloud Sync" to set it up.');
-    return;
-  }
-  pushAllToCloud();
-  alert('✅ Pushed local data to the cloud. All other devices will update within a few seconds.');
 }
 
 /* =========================================================
@@ -2067,7 +1707,6 @@ function updateUIForRole(){
     if (el) el.style.display = isViewerMode ? 'flex' : 'none';
   });
 
-  // Hide Data tab completely for viewers
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.toggle('view-only', isViewerMode);
     if (btn.dataset.tab === 'data'){
@@ -2084,7 +1723,7 @@ function updateUIForRole(){
   const editElements = [
     'uploadBtn','saveBtn','deleteAllBtn','addFloatingBtn','backupBtn','restoreBtn',
     'newIssueBtn','saveMaterialBtn','confirmIssueBtn','confirmDeleteBtn',
-    'newReceiptBtn','confirmReceiptBtn','adminPinBtn','cloudDisconnectBtn'
+    'newReceiptBtn','confirmReceiptBtn','adminPinBtn'
   ];
   editElements.forEach(id => {
     const el = $(id);
@@ -2247,7 +1886,7 @@ function changePassword(e){
   setAppPassword(newPw);
   closePasswordModal();
   updateDefaultPasswordWarning();
-  alert('✅ Password updated successfully.\n\nPlease use the new password the next time you log in as the Store Manager. If cloud sync is active, all devices will receive the new password automatically.');
+  alert('✅ Password updated successfully.\n\nPlease use the new password the next time you log in as the Store Manager.');
 }
 
 /* =========================================================
@@ -2483,17 +2122,14 @@ const TAB_MAP = {
 };
 
 function switchTab(tab){
-  // ----- Data tab security gate (PIN required EVERY time) -----
   if (tab === 'data'){
     if (isViewer()){
       alert('Access denied.\n\nOnly the Store Manager can open the Data section.');
       return;
     }
-    // Always prompt for the Data Section PIN
     pendingDataTab = 'data';
     $('dataLockPassword').value = '';
     $('dataLockError').textContent = '';
-    // Refresh the hint
     const hint = $('dataLockHint');
     if (hint){
       hint.innerHTML = isDefaultDataPin()
@@ -2504,7 +2140,6 @@ function switchTab(tab){
     setTimeout(() => $('dataLockPassword').focus(), 100);
     return;
   }
-
   openTabNow(tab);
 }
 
@@ -3391,7 +3026,6 @@ function renderDataTab(){
     <span class="chip"><i class="fas fa-users"></i> ${viewOnlyUsers.length} view-only users</span>
     <span class="chip"><i class="fas fa-hdd"></i> ${kb} KB stored locally</span>
   `;
-  updateCloudStatus(cloudEnabled ? (cloudConnectedOnce ? 'online' : 'connecting') : 'offline');
   updateDataPinStatusChip();
 }
 
@@ -3487,7 +3121,7 @@ function restoreJSON(e){
     try {
       const obj = JSON.parse(ev.target.result);
       if (!obj || !Array.isArray(obj.storeData)){ alert('Invalid backup file.'); return; }
-      if (!confirm('Restore this backup? It will replace all current data (and push it to the cloud if connected).')) return;
+      if (!confirm('Restore this backup? It will replace all current data (and push it to the cloud automatically).')) return;
       storeData = obj.storeData;
       issuedRecords = Array.isArray(obj.issuedRecords) ? obj.issuedRecords : [];
       receiptRecords = Array.isArray(obj.receiptRecords) ? obj.receiptRecords : [];
@@ -3627,7 +3261,7 @@ function deleteAllData(e){
     localStorage.removeItem('haldiaStoreData');
     localStorage.removeItem('haldiaIssuedData');
     localStorage.removeItem('haldiaReceiptData');
-    if (cloudEnabled) pushAllToCloud();
+    pushAllToCloud();
     closeDeleteModal();
     refreshMaterialCombos();
     updateDashboard();
@@ -3646,17 +3280,13 @@ function persistData(){
   localStorage.setItem('haldiaStoreData', JSON.stringify(storeData));
   localStorage.setItem('haldiaIssuedData', JSON.stringify(issuedRecords));
   localStorage.setItem('haldiaReceiptData', JSON.stringify(receiptRecords));
-  if (cloudEnabled){
-    pushAllToCloud();
-  }
+  pushAllToCloud();
 }
 function saveToLocalStorage(){
   if (isViewer()){ alert('View-Only users cannot save data.'); return; }
   persistData();
   renderDataTab();
-  alert(cloudEnabled
-    ? '✅ Data saved to this device and synced to the cloud.'
-    : '✅ Data saved to this device.');
+  alert('✅ Data saved to this device and synced to the cloud.');
 }
 
 /* =========================================================
@@ -3685,14 +3315,11 @@ function saveToLocalStorage(){
   }
   sessionStorage.setItem('haldiaCurrentUser', JSON.stringify(currentUser));
 
-  // Cloud connect first
+  // Cloud connect (always)
   const ok = initCloud();
   if (ok){
     await initialCloudPull();
     attachCloudListeners();
-    updateCloudStatus('online');
-  } else {
-    updateCloudStatus('offline');
   }
 
   // Re-validate viewer after cloud pull
